@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ZoomableImage } from "@/components/ZoomableImage";
-import { Calendar, Upload } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/routine")({
   component: RoutinePage,
