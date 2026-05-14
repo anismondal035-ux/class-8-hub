@@ -14,7 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      daily_content: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          image_url: string | null
+          thought: string
+          thought_author: string | null
+          word: string
+          word_meaning: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          image_url?: string | null
+          thought: string
+          thought_author?: string | null
+          word: string
+          word_meaning: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          image_url?: string | null
+          thought?: string
+          thought_author?: string | null
+          word?: string
+          word_meaning?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
