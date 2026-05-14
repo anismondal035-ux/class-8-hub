@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { pickFromBank } from "./word-bank";
 
 const dateSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -9,6 +10,11 @@ const dateSchema = z.object({
 const shuffleSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   seed: z.number().int().min(0).max(1_000_000).optional(),
+});
+
+const imageReqSchema = z.object({
+  word: z.string().min(1).max(60),
+  thought: z.string().min(1).max(400),
 });
 
 type DailyRow = {
@@ -146,26 +152,20 @@ export const ensureDailyImage = createServerFn({ method: "POST" })
     return { image_url: url };
   });
 
-// Generates an additional fresh word/thought (not stored) for the "another one" button.
+// INSTANT shuffle from a curated local bank — no AI call, no waiting.
 export const shuffleDaily = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => shuffleSchema.parse(i))
   .handler(async ({ data }) => {
+    const seed = data.seed ?? Math.floor(Math.random() * 1_000_000);
+    return pickFromBank(data.date, seed);
+  });
+
+// Generate a poster on demand (used by shuffle so the image actually changes).
+export const generatePoster = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => imageReqSchema.parse(i))
+  .handler(async ({ data }) => {
     const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) {
-      return {
-        word: "Tenacious", word_meaning: "Holding on firmly; not giving up.",
-        thought: "Small steps every day beat big leaps once a year.",
-        thought_author: null,
-      };
-    }
-    const seed = data.seed ?? Math.floor(Math.random() * 1000);
-    try {
-      return await generateText(apiKey, data.date, seed);
-    } catch {
-      return {
-        word: "Vivid", word_meaning: "Bright, clear and full of life.",
-        thought: "Today is a blank page — write something worth reading.",
-        thought_author: null,
-      };
-    }
+    if (!apiKey) return { image_url: null };
+    const url = await generateImage(apiKey, data.word, data.thought);
+    return { image_url: url };
   });
