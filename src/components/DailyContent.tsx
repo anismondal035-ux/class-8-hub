@@ -19,7 +19,7 @@ export function DailyContent() {
     staleTime: 1000 * 60 * 60,
   });
 
-  const prettyDate = new Date(date + "T00:00:00").toLocaleDateString(undefined, {
+  const prettyDate = new Date(date + "T00:00:00").toLocaleDateString("en-GB", {
     weekday: "long",
     year: "numeric",
     month: "long",

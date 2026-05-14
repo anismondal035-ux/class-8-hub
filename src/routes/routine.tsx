@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ZoomableImage } from "@/components/ZoomableImage";
-import { Calendar, Upload } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/routine")({
   component: RoutinePage,
@@ -36,25 +36,9 @@ function RoutinePage() {
 }
 
 function ImageOrPlaceholder() {
-  // Try the image; if it doesn't exist yet, show an upload helper.
   return (
     <div className="relative">
-      <ZoomableImage src={ROUTINE_IMAGE} alt="Class 8 B weekly routine" className="w-full max-h-[75vh]" />
-      <noscript />
-      {/* fallback hint visible only if image fails — handled via onError below */}
-      <FallbackHint />
-    </div>
-  );
-}
-
-function FallbackHint() {
-  // Visible card under the image telling Anis how to add the routine pic.
-  return (
-    <div className="mt-4 p-4 rounded-2xl bg-secondary/50 border border-dashed border-border text-sm text-muted-foreground flex items-start gap-3">
-      <Upload className="w-4 h-4 mt-0.5 text-primary" />
-      <div>
-        <strong className="text-foreground">Anis:</strong> drop the routine image as <code className="px-1.5 py-0.5 rounded bg-background border">public/routine.jpg</code> (or send it in chat and I'll wire it up). Until then, this area shows the placeholder.
-      </div>
+      <ZoomableImage src={ROUTINE_IMAGE} alt="Class 8 B weekly routine — Class teacher: Aritri Das" className="w-full max-h-[80vh]" />
     </div>
   );
 }
