@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { getDailyContent, ensureDailyImage, shuffleDaily } from "@/lib/daily.functions";
+import { getDailyContent, ensureDailyImage, shuffleDaily, generatePoster } from "@/lib/daily.functions";
 import { ZoomableImage } from "./ZoomableImage";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,13 @@ function todayISO() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
+type Extra = { word: string; word_meaning: string; thought: string; thought_author: string | null };
+
 export function DailyContent() {
   const fn = useServerFn(getDailyContent);
   const imgFn = useServerFn(ensureDailyImage);
   const shuffleFn = useServerFn(shuffleDaily);
+  const posterFn = useServerFn(generatePoster);
   const date = todayISO();
 
   const { data, isLoading } = useQuery({
@@ -26,31 +29,39 @@ export function DailyContent() {
 
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
-  const [extra, setExtra] = useState<{ word: string; word_meaning: string; thought: string; thought_author: string | null } | null>(null);
+  const [extra, setExtra] = useState<Extra | null>(null);
+  const [extraImage, setExtraImage] = useState<string | null>(null);
   const [shuffling, setShuffling] = useState(false);
 
-  // Lazily fetch the poster after the text has rendered.
+  // Lazily fetch today's poster.
   useEffect(() => {
+    if (extra) return;
     if (!data || data.image_url || imageUrl || imageLoading) return;
     setImageLoading(true);
     imgFn({ data: { date } })
       .then((r) => setImageUrl(r.image_url))
       .catch(() => {})
       .finally(() => setImageLoading(false));
-  }, [data, imageUrl, imageLoading, date, imgFn]);
+  }, [data, imageUrl, imageLoading, date, imgFn, extra]);
 
   const prettyDate = new Date(date + "T00:00:00").toLocaleDateString("en-GB", {
     weekday: "long", year: "numeric", month: "long", day: "numeric",
   });
 
   const shown = extra ?? data;
-  const finalImage = data?.image_url || imageUrl;
+  const finalImage = extra ? extraImage : (data?.image_url || imageUrl);
+  const showImageLoader = extra ? shuffling || (!extraImage) : imageLoading || (data && !data.image_url);
 
   async function onShuffle() {
     setShuffling(true);
+    setExtraImage(null);
     try {
-      const r = await shuffleFn({ data: { date, seed: Math.floor(Math.random() * 1000) } });
+      const r = await shuffleFn({ data: { date, seed: Math.floor(Math.random() * 1_000_000) } });
       setExtra(r);
+      // Generate a fresh poster for the new word in the background.
+      posterFn({ data: { word: r.word, thought: r.thought } })
+        .then((p) => setExtraImage(p.image_url))
+        .catch(() => {});
     } catch {} finally { setShuffling(false); }
   }
 
@@ -94,7 +105,7 @@ export function DailyContent() {
                 )}
               </div>
               {extra && (
-                <button onClick={() => setExtra(null)} className="text-xs text-primary hover:underline self-start">
+                <button onClick={() => { setExtra(null); setExtraImage(null); }} className="text-xs text-primary hover:underline self-start">
                   ← Back to today's official one
                 </button>
               )}
@@ -104,12 +115,12 @@ export function DailyContent() {
 
         <div className="relative bg-secondary min-h-[320px] lg:min-h-[480px] flex items-center justify-center p-6">
           {finalImage ? (
-            <ZoomableImage src={finalImage} alt={`Word of the day: ${data?.word}`} className="w-full h-full max-h-[480px] shadow-card-soft" />
-          ) : imageLoading || (data && !data.image_url) ? (
+            <ZoomableImage src={finalImage} alt={`Word of the day: ${shown?.word}`} className="w-full h-full max-h-[480px] shadow-card-soft" />
+          ) : showImageLoader ? (
             <div className="flex flex-col items-center gap-3 text-muted-foreground text-center">
               <ImageIcon className="w-10 h-10 opacity-40" />
               <Loader2 className="w-5 h-5 animate-spin" />
-              <p className="text-xs">Painting today's poster… (about 10 seconds)</p>
+              <p className="text-xs">Painting the poster… (about 10 seconds)</p>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2 text-muted-foreground">
