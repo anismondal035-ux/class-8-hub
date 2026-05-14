@@ -1,0 +1,13 @@
+{
+  "name": "Class 8 B",
+  "short_name": "Class 8 B",
+  "description": "Class 8 B — AI buddy, daily word, routine and school links.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b0b14",
+  "theme_color": "#6366f1",
+  "icons": [
+    { "src": "/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
