@@ -83,7 +83,7 @@ export function Chat() {
         </span>
         <div>
           <h3 className="font-bold leading-tight">Class 8 B Buddy</h3>
-          <p className="text-xs text-muted-foreground">Ask anything — homework, GK, ideas. Broken English is fine.</p>
+          <p className="text-xs text-muted-foreground">Searches the web · can draw pictures · understands Hinglish</p>
         </div>
       </div>
 
