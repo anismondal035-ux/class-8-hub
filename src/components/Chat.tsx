@@ -9,18 +9,31 @@ type Msg = { role: "user" | "assistant"; content: string };
 
 const SUGGESTIONS = [
   "Explain Pythagoras theorem like I'm 13",
-  "Give me 5 fun facts about black holes",
-  "Help me write a short essay on My Best Friend",
+  "Who won the latest cricket world cup?",
+  "Draw a picture of a futuristic Kolkata skyline",
   "What is photosynthesis in simple words?",
 ];
 
 function renderMarkdownLite(text: string) {
-  // very small markdown: **bold**, *italic*, line breaks, bullet points
+  // small markdown: images ![alt](url), **bold**, *italic*, `code`, bullets, line breaks
   const lines = text.split("\n");
   return lines.map((line, i) => {
+    const imgMatch = line.match(/^!\[([^\]]*)\]\((https?:\/\/[^\s)]+|data:image\/[a-zA-Z+]+;base64,[A-Za-z0-9+/=]+)\)\s*$/);
+    if (imgMatch) {
+      return (
+        <img
+          key={i}
+          src={imgMatch[2]}
+          alt={imgMatch[1] || "image"}
+          className="rounded-xl border border-border max-w-full my-2"
+          loading="lazy"
+        />
+      );
+    }
     const bullet = /^\s*[-*]\s+/.test(line);
     const clean = line.replace(/^\s*[-*]\s+/, "");
     const html = clean
+      .replace(/!\[([^\]]*)\]\((https?:\/\/[^\s)]+)\)/g, '<img src="$2" alt="$1" class="rounded-xl border border-border max-w-full my-2" />')
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/\*(.+?)\*/g, "<em>$1</em>")
       .replace(/`(.+?)`/g, '<code class="px-1 py-0.5 rounded bg-muted text-sm">$1</code>');
@@ -70,7 +83,7 @@ export function Chat() {
         </span>
         <div>
           <h3 className="font-bold leading-tight">Class 8 B Buddy</h3>
-          <p className="text-xs text-muted-foreground">Ask anything — homework, GK, ideas. Broken English is fine.</p>
+          <p className="text-xs text-muted-foreground">Searches the web · can draw pictures · understands Hinglish</p>
         </div>
       </div>
 

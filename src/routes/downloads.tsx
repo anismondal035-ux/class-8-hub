@@ -88,7 +88,7 @@ function DownloadsPage() {
           </ol>
 
           <p className="mt-5 text-xs text-muted-foreground">
-            A signed Play-Store-style <code className="px-1 rounded bg-background border">.apk</code> needs Android Studio signing — coming next. The home-screen install above is the same experience offline-friendly users expect.
+            Once installed, it gets its own icon, opens full-screen with no Chrome toolbar, and behaves exactly like a Play Store app. Works offline for pages you've already opened.
           </p>
         </Card>
       </div>
