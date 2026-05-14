@@ -66,6 +66,10 @@ export const chat = createServerFn({ method: "POST" })
       return { reply: "I tried to draw that but the image generator didn't respond. Try again in a few seconds.", error: true };
     }
 
+    // Inject today's real date so the model knows what "latest" means.
+    const today = new Date().toLocaleDateString("en-GB", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+    const SYSTEM_PROMPT = `${SYSTEM_PROMPT_BASE}\n\nToday's date is ${today}. Treat anything before today as past. Always Google for current facts.`;
+
     // Text reply with Google Search grounding so it can pull fresh facts.
     const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
