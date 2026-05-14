@@ -57,7 +57,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:description", content: "AI study buddy, Word & Thought of the Day, routine and more for Class 8 B." },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/app-icon.png" },
+      { rel: "icon", href: "/app-icon.png" },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
