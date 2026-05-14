@@ -33,74 +33,67 @@
   --color-ring-offset-background: var(--background);
 }
 
+/* Premium dark + gold palette. Applied to :root so the whole site is always dark/gold. */
 :root {
   --radius: 0.875rem;
 
-  --background: oklch(0.985 0.005 240);
-  --foreground: oklch(0.18 0.04 265);
+  --background: oklch(0.14 0.012 60);
+  --foreground: oklch(0.96 0.02 85);
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.04 265);
+  --card: oklch(0.18 0.014 60);
+  --card-foreground: oklch(0.96 0.02 85);
 
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.04 265);
+  --popover: oklch(0.18 0.014 60);
+  --popover-foreground: oklch(0.96 0.02 85);
 
-  --primary: oklch(0.55 0.22 265);
-  --primary-foreground: oklch(0.99 0 0);
+  /* Rich champagne gold */
+  --primary: oklch(0.78 0.14 85);
+  --primary-foreground: oklch(0.14 0.012 60);
 
-  --secondary: oklch(0.96 0.02 265);
-  --secondary-foreground: oklch(0.25 0.06 265);
+  --secondary: oklch(0.22 0.014 60);
+  --secondary-foreground: oklch(0.96 0.02 85);
 
-  --muted: oklch(0.95 0.01 265);
-  --muted-foreground: oklch(0.5 0.03 265);
+  --muted: oklch(0.22 0.012 60);
+  --muted-foreground: oklch(0.72 0.03 80);
 
-  --accent: oklch(0.72 0.18 50);
-  --accent-foreground: oklch(0.15 0.02 265);
+  /* Deeper amber accent */
+  --accent: oklch(0.7 0.18 60);
+  --accent-foreground: oklch(0.14 0.012 60);
 
-  --destructive: oklch(0.6 0.24 27);
-  --destructive-foreground: oklch(0.99 0 0);
+  --destructive: oklch(0.62 0.22 27);
+  --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.91 0.015 265);
-  --input: oklch(0.93 0.015 265);
-  --ring: oklch(0.55 0.22 265);
+  --border: oklch(0.78 0.14 85 / 18%);
+  --input: oklch(0.78 0.14 85 / 14%);
+  --ring: oklch(0.78 0.14 85);
 
-  --gradient-hero: linear-gradient(135deg, oklch(0.55 0.22 265), oklch(0.65 0.2 320) 50%, oklch(0.72 0.18 50));
-  --gradient-card: linear-gradient(135deg, oklch(0.99 0.005 265), oklch(0.96 0.02 265));
-  --gradient-accent: linear-gradient(135deg, oklch(0.72 0.18 50), oklch(0.78 0.16 30));
-  --shadow-glow: 0 20px 60px -15px color-mix(in oklab, oklch(0.55 0.22 265) 40%, transparent);
-  --shadow-card: 0 8px 30px -8px color-mix(in oklab, oklch(0.18 0.04 265) 18%, transparent);
+  --gradient-hero: linear-gradient(135deg, oklch(0.82 0.13 90), oklch(0.7 0.18 60) 55%, oklch(0.55 0.14 45));
+  --gradient-card: linear-gradient(135deg, oklch(0.2 0.014 60), oklch(0.16 0.012 60));
+  --gradient-accent: linear-gradient(135deg, oklch(0.82 0.13 90), oklch(0.65 0.16 50));
+  --shadow-glow: 0 20px 70px -15px color-mix(in oklab, oklch(0.78 0.14 85) 45%, transparent);
+  --shadow-card: 0 10px 40px -10px color-mix(in oklab, oklch(0 0 0) 70%, transparent);
 }
 
+/* keep .dark identical so any toggle still works */
 .dark {
-  --background: oklch(0.13 0.03 265);
-  --foreground: oklch(0.98 0.01 265);
-  --card: oklch(0.18 0.04 265);
-  --card-foreground: oklch(0.98 0.01 265);
-  --popover: oklch(0.18 0.04 265);
-  --popover-foreground: oklch(0.98 0.01 265);
-  --primary: oklch(0.7 0.2 265);
-  --primary-foreground: oklch(0.13 0.03 265);
-  --secondary: oklch(0.25 0.04 265);
-  --secondary-foreground: oklch(0.98 0.01 265);
-  --muted: oklch(0.22 0.03 265);
-  --muted-foreground: oklch(0.7 0.03 265);
-  --accent: oklch(0.75 0.18 50);
-  --accent-foreground: oklch(0.13 0.03 265);
-  --destructive: oklch(0.65 0.24 27);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.7 0.2 265);
+  color-scheme: dark;
 }
 
 @layer base {
   * {
     border-color: var(--color-border);
   }
+  html {
+    color-scheme: dark;
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in oklab, oklch(0.78 0.14 85) 18%, transparent), transparent 70%),
+      radial-gradient(ellipse 60% 50% at 100% 100%, color-mix(in oklab, oklch(0.7 0.18 60) 12%, transparent), transparent 70%);
+    background-attachment: fixed;
   }
   h1, h2, h3, h4 {
     letter-spacing: -0.02em;

@@ -3,7 +3,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { chat } from "@/lib/chat.functions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Sparkles, Loader2, User, Bot } from "lucide-react";
+import { Send, Sparkles, Loader2, User, Bot, Trash2 } from "lucide-react";
+
+const STORAGE_KEY = "class8b-chat-history-v1";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -53,6 +55,24 @@ export function Chat() {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  // Restore from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setMessages(parsed);
+      }
+    } catch {}
+  }, []);
+
+  // Persist on change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-50)));
+    } catch {}
+  }, [messages]);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading]);
@@ -81,10 +101,16 @@ export function Chat() {
         <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-hero shadow-glow text-primary-foreground">
           <Sparkles className="w-5 h-5" />
         </span>
-        <div>
+        <div className="flex-1">
           <h3 className="font-bold leading-tight">Class 8 B Buddy</h3>
-          <p className="text-xs text-muted-foreground">Searches the web · can draw pictures · understands Hinglish</p>
+          <p className="text-xs text-muted-foreground">Googles before answering · can draw pictures · understands Hinglish</p>
         </div>
+        {messages.length > 0 && (
+          <Button size="sm" variant="ghost" onClick={() => { setMessages([]); try { localStorage.removeItem(STORAGE_KEY); } catch {} }} className="h-8 text-muted-foreground">
+            <Trash2 className="w-3.5 h-3.5" />
+            <span className="ml-1.5 text-xs hidden sm:inline">Clear</span>
+          </Button>
+        )}
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-5">
