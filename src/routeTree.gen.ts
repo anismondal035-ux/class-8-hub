@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VawsumRouteImport } from './routes/vawsum'
 import { Route as RoutineRouteImport } from './routes/routine'
+import { Route as MemoriesRouteImport } from './routes/memories'
+import { Route as FunzoneRouteImport } from './routes/funzone'
 import { Route as DownloadsRouteImport } from './routes/downloads'
+import { Route as BirthdaysRouteImport } from './routes/birthdays'
 import { Route as IndexRouteImport } from './routes/index'
 
 const VawsumRoute = VawsumRouteImport.update({
@@ -24,9 +27,24 @@ const RoutineRoute = RoutineRouteImport.update({
   path: '/routine',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MemoriesRoute = MemoriesRouteImport.update({
+  id: '/memories',
+  path: '/memories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FunzoneRoute = FunzoneRouteImport.update({
+  id: '/funzone',
+  path: '/funzone',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DownloadsRoute = DownloadsRouteImport.update({
   id: '/downloads',
   path: '/downloads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BirthdaysRoute = BirthdaysRouteImport.update({
+  id: '/birthdays',
+  path: '/birthdays',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,34 +55,68 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/birthdays': typeof BirthdaysRoute
   '/downloads': typeof DownloadsRoute
+  '/funzone': typeof FunzoneRoute
+  '/memories': typeof MemoriesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/birthdays': typeof BirthdaysRoute
   '/downloads': typeof DownloadsRoute
+  '/funzone': typeof FunzoneRoute
+  '/memories': typeof MemoriesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/birthdays': typeof BirthdaysRoute
   '/downloads': typeof DownloadsRoute
+  '/funzone': typeof FunzoneRoute
+  '/memories': typeof MemoriesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/downloads' | '/routine' | '/vawsum'
+  fullPaths:
+    | '/'
+    | '/birthdays'
+    | '/downloads'
+    | '/funzone'
+    | '/memories'
+    | '/routine'
+    | '/vawsum'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/downloads' | '/routine' | '/vawsum'
-  id: '__root__' | '/' | '/downloads' | '/routine' | '/vawsum'
+  to:
+    | '/'
+    | '/birthdays'
+    | '/downloads'
+    | '/funzone'
+    | '/memories'
+    | '/routine'
+    | '/vawsum'
+  id:
+    | '__root__'
+    | '/'
+    | '/birthdays'
+    | '/downloads'
+    | '/funzone'
+    | '/memories'
+    | '/routine'
+    | '/vawsum'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BirthdaysRoute: typeof BirthdaysRoute
   DownloadsRoute: typeof DownloadsRoute
+  FunzoneRoute: typeof FunzoneRoute
+  MemoriesRoute: typeof MemoriesRoute
   RoutineRoute: typeof RoutineRoute
   VawsumRoute: typeof VawsumRoute
 }
@@ -85,11 +137,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoutineRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/memories': {
+      id: '/memories'
+      path: '/memories'
+      fullPath: '/memories'
+      preLoaderRoute: typeof MemoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/funzone': {
+      id: '/funzone'
+      path: '/funzone'
+      fullPath: '/funzone'
+      preLoaderRoute: typeof FunzoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/downloads': {
       id: '/downloads'
       path: '/downloads'
       fullPath: '/downloads'
       preLoaderRoute: typeof DownloadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/birthdays': {
+      id: '/birthdays'
+      path: '/birthdays'
+      fullPath: '/birthdays'
+      preLoaderRoute: typeof BirthdaysRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,10 +177,23 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BirthdaysRoute: BirthdaysRoute,
   DownloadsRoute: DownloadsRoute,
+  FunzoneRoute: FunzoneRoute,
+  MemoriesRoute: MemoriesRoute,
   RoutineRoute: RoutineRoute,
   VawsumRoute: VawsumRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
