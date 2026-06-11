@@ -11,10 +11,16 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VawsumRouteImport } from './routes/vawsum'
 import { Route as RoutineRouteImport } from './routes/routine'
+import { Route as NotesRouteImport } from './routes/notes'
 import { Route as MemoriesRouteImport } from './routes/memories'
+import { Route as HomeworkRouteImport } from './routes/homework'
 import { Route as FunzoneRouteImport } from './routes/funzone'
+import { Route as EventsRouteImport } from './routes/events'
 import { Route as DownloadsRouteImport } from './routes/downloads'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as BirthdaysRouteImport } from './routes/birthdays'
+import { Route as AssistantRouteImport } from './routes/assistant'
+import { Route as AnnouncementsRouteImport } from './routes/announcements'
 import { Route as IndexRouteImport } from './routes/index'
 
 const VawsumRoute = VawsumRouteImport.update({
@@ -27,9 +33,19 @@ const RoutineRoute = RoutineRouteImport.update({
   path: '/routine',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NotesRoute = NotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MemoriesRoute = MemoriesRouteImport.update({
   id: '/memories',
   path: '/memories',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeworkRoute = HomeworkRouteImport.update({
+  id: '/homework',
+  path: '/homework',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FunzoneRoute = FunzoneRouteImport.update({
@@ -37,14 +53,34 @@ const FunzoneRoute = FunzoneRouteImport.update({
   path: '/funzone',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DownloadsRoute = DownloadsRouteImport.update({
   id: '/downloads',
   path: '/downloads',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BirthdaysRoute = BirthdaysRouteImport.update({
   id: '/birthdays',
   path: '/birthdays',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistantRoute = AssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnnouncementsRoute = AnnouncementsRouteImport.update({
+  id: '/announcements',
+  path: '/announcements',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -55,29 +91,47 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/announcements': typeof AnnouncementsRoute
+  '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
+  '/chat': typeof ChatRoute
   '/downloads': typeof DownloadsRoute
+  '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
+  '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
+  '/notes': typeof NotesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/announcements': typeof AnnouncementsRoute
+  '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
+  '/chat': typeof ChatRoute
   '/downloads': typeof DownloadsRoute
+  '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
+  '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
+  '/notes': typeof NotesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/announcements': typeof AnnouncementsRoute
+  '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
+  '/chat': typeof ChatRoute
   '/downloads': typeof DownloadsRoute
+  '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
+  '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
+  '/notes': typeof NotesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
@@ -85,38 +139,62 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/announcements'
+    | '/assistant'
     | '/birthdays'
+    | '/chat'
     | '/downloads'
+    | '/events'
     | '/funzone'
+    | '/homework'
     | '/memories'
+    | '/notes'
     | '/routine'
     | '/vawsum'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/announcements'
+    | '/assistant'
     | '/birthdays'
+    | '/chat'
     | '/downloads'
+    | '/events'
     | '/funzone'
+    | '/homework'
     | '/memories'
+    | '/notes'
     | '/routine'
     | '/vawsum'
   id:
     | '__root__'
     | '/'
+    | '/announcements'
+    | '/assistant'
     | '/birthdays'
+    | '/chat'
     | '/downloads'
+    | '/events'
     | '/funzone'
+    | '/homework'
     | '/memories'
+    | '/notes'
     | '/routine'
     | '/vawsum'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnnouncementsRoute: typeof AnnouncementsRoute
+  AssistantRoute: typeof AssistantRoute
   BirthdaysRoute: typeof BirthdaysRoute
+  ChatRoute: typeof ChatRoute
   DownloadsRoute: typeof DownloadsRoute
+  EventsRoute: typeof EventsRoute
   FunzoneRoute: typeof FunzoneRoute
+  HomeworkRoute: typeof HomeworkRoute
   MemoriesRoute: typeof MemoriesRoute
+  NotesRoute: typeof NotesRoute
   RoutineRoute: typeof RoutineRoute
   VawsumRoute: typeof VawsumRoute
 }
@@ -137,11 +215,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoutineRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/notes': {
+      id: '/notes'
+      path: '/notes'
+      fullPath: '/notes'
+      preLoaderRoute: typeof NotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/memories': {
       id: '/memories'
       path: '/memories'
       fullPath: '/memories'
       preLoaderRoute: typeof MemoriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/homework': {
+      id: '/homework'
+      path: '/homework'
+      fullPath: '/homework'
+      preLoaderRoute: typeof HomeworkRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/funzone': {
@@ -151,6 +243,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FunzoneRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/downloads': {
       id: '/downloads'
       path: '/downloads'
@@ -158,11 +257,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DownloadsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/birthdays': {
       id: '/birthdays'
       path: '/birthdays'
       fullPath: '/birthdays'
       preLoaderRoute: typeof BirthdaysRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assistant': {
+      id: '/assistant'
+      path: '/assistant'
+      fullPath: '/assistant'
+      preLoaderRoute: typeof AssistantRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/announcements': {
+      id: '/announcements'
+      path: '/announcements'
+      fullPath: '/announcements'
+      preLoaderRoute: typeof AnnouncementsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -177,10 +297,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnnouncementsRoute: AnnouncementsRoute,
+  AssistantRoute: AssistantRoute,
   BirthdaysRoute: BirthdaysRoute,
+  ChatRoute: ChatRoute,
   DownloadsRoute: DownloadsRoute,
+  EventsRoute: EventsRoute,
   FunzoneRoute: FunzoneRoute,
+  HomeworkRoute: HomeworkRoute,
   MemoriesRoute: MemoriesRoute,
+  NotesRoute: NotesRoute,
   RoutineRoute: RoutineRoute,
   VawsumRoute: VawsumRoute,
 }
