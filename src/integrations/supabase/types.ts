@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          author_name: string
+          body: string
+          created_at: string
+          id: string
+          pinned: boolean
+          title: string
+          user_id: string
+        }
+        Insert: {
+          author_name: string
+          body: string
+          created_at?: string
+          id?: string
+          pinned?: boolean
+          title: string
+          user_id: string
+        }
+        Update: {
+          author_name?: string
+          body?: string
+          created_at?: string
+          id?: string
+          pinned?: boolean
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          avatar_url: string | null
+          content: string
+          created_at: string
+          display_name: string
+          id: string
+          reply_to: string | null
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          content: string
+          created_at?: string
+          display_name: string
+          id?: string
+          reply_to?: string | null
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          content?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          reply_to?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_reply_to_fkey"
+            columns: ["reply_to"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_content: {
         Row: {
           created_at: string
@@ -44,6 +112,229 @@ export type Database = {
           thought_author?: string | null
           word?: string
           word_meaning?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          author_name: string
+          created_at: string
+          description: string | null
+          event_date: string
+          icon: string | null
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          author_name: string
+          created_at?: string
+          description?: string | null
+          event_date: string
+          icon?: string | null
+          id?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          author_name?: string
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          icon?: string | null
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      homework: {
+        Row: {
+          author_name: string
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          subject: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          author_name: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          subject: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          author_name?: string
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          subject?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      memory_comments: {
+        Row: {
+          content: string
+          created_at: string
+          display_name: string
+          id: string
+          photo_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          display_name: string
+          id?: string
+          photo_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          photo_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memory_comments_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "memory_photos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memory_photos: {
+        Row: {
+          album: string
+          caption: string | null
+          created_at: string
+          id: string
+          image_url: string
+          storage_path: string
+          uploader_name: string
+          user_id: string | null
+          year: number
+        }
+        Insert: {
+          album?: string
+          caption?: string | null
+          created_at?: string
+          id?: string
+          image_url: string
+          storage_path: string
+          uploader_name?: string
+          user_id?: string | null
+          year?: number
+        }
+        Update: {
+          album?: string
+          caption?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          storage_path?: string
+          uploader_name?: string
+          user_id?: string | null
+          year?: number
+        }
+        Relationships: []
+      }
+      memory_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          photo_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          photo_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          photo_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "memory_reactions_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "memory_photos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notes: {
+        Row: {
+          author_name: string
+          content: string
+          created_at: string
+          id: string
+          subject: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          author_name: string
+          content: string
+          created_at?: string
+          id?: string
+          subject: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          author_name?: string
+          content?: string
+          created_at?: string
+          id?: string
+          subject?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          updated_at?: string
         }
         Relationships: []
       }
