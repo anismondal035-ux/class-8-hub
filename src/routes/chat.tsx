@@ -5,8 +5,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, MessageSquare, Search, Reply, X, Trash2, LogIn, Smile } from "lucide-react";
+import { Send, MessageSquare, Search, Reply, X, Trash2, LogIn, Smile, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
+import { findProfanity } from "@/lib/moderation";
 
 export const Route = createFileRoute("/chat")({
   component: ClassChatPage,
@@ -95,6 +96,14 @@ function ClassChatPage() {
   async function send() {
     const content = input.trim();
     if (!content || !user) return;
+    const bad = findProfanity(content);
+    if (bad) {
+      toast.error("Message blocked", {
+        description: "Please keep the chat school-friendly. Inappropriate language isn't allowed.",
+        icon: <ShieldAlert className="w-4 h-4" />,
+      });
+      return;
+    }
     setInput(""); setEmojiOpen(false);
     const { error } = await supabase.from("chat_messages").insert({
       user_id: user.id,
@@ -108,8 +117,10 @@ function ClassChatPage() {
   }
 
   async function del(id: string) {
+    if (!confirm("Delete this message? This can't be undone.")) return;
     const { error } = await supabase.from("chat_messages").delete().eq("id", id);
     if (error) toast.error("Couldn't delete");
+    else toast.success("Message deleted");
   }
 
   const filtered = search.trim()
