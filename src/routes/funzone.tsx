@@ -1,28 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Gamepad2, RotateCcw, Trophy } from "lucide-react";
+import { FlappyBird } from "@/components/games/FlappyBird";
+import { TruthOrDare } from "@/components/games/TruthOrDare";
 
 export const Route = createFileRoute("/funzone")({
   component: FunZone,
   head: () => ({
     meta: [
       { title: "Fun Zone — Class 8 B" },
-      { name: "description", content: "Mini games for break time: Tic Tac Toe, Memory, Rock Paper Scissors, Number Guess." },
+      { name: "description", content: "Mini games for break time: Flappy Bird, Tic Tac Toe, Memory, Rock Paper Scissors, Truth or Dare." },
     ],
   }),
 });
 
-function FunZone() {
-  const [game, setGame] = useState<"menu" | "ttt" | "rps" | "guess" | "memory" | "reflex">("menu");
+type GameId = "menu" | "flappy" | "ttt" | "rps" | "guess" | "memory" | "tod";
 
-  const GAMES = [
+function FunZone() {
+  const [game, setGame] = useState<GameId>("menu");
+
+  const GAMES: { id: Exclude<GameId, "menu">; name: string; desc: string; emoji: string }[] = [
+    { id: "flappy", name: "Flappy Bird", desc: "Beat your high score", emoji: "🐦" },
+    { id: "tod", name: "Truth or Dare", desc: "Solo or party mode", emoji: "🎭" },
     { id: "ttt", name: "Tic Tac Toe", desc: "Classic 2-player", emoji: "❌⭕" },
     { id: "rps", name: "Rock Paper Scissors", desc: "Beat the computer", emoji: "✊✋✌️" },
     { id: "guess", name: "Number Guess", desc: "Find the secret number", emoji: "🎯" },
     { id: "memory", name: "Memory Match", desc: "Find the pairs", emoji: "🧠" },
-    { id: "reflex", name: "Reflex Test", desc: "How fast are you?", emoji: "⚡" },
-  ] as const;
+  ];
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
@@ -41,7 +46,7 @@ function FunZone() {
       {game === "menu" && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {GAMES.map((g) => (
-            <button key={g.id} onClick={() => setGame(g.id as typeof game)} className="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-transform">
+            <button key={g.id} onClick={() => setGame(g.id)} className="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-transform">
               <div className="text-3xl mb-2">{g.emoji}</div>
               <h3 className="font-bold text-lg">{g.name}</h3>
               <p className="text-sm text-muted-foreground">{g.desc}</p>
@@ -50,11 +55,12 @@ function FunZone() {
         </div>
       )}
 
+      {game === "flappy" && <FlappyBird />}
+      {game === "tod" && <TruthOrDare />}
       {game === "ttt" && <TicTacToe />}
       {game === "rps" && <RPS />}
       {game === "guess" && <NumberGuess />}
       {game === "memory" && <Memory />}
-      {game === "reflex" && <Reflex />}
     </div>
   );
 }
@@ -214,37 +220,3 @@ function Memory() {
   );
 }
 
-/* ---------- Reflex ---------- */
-function Reflex() {
-  const [state, setState] = useState<"idle" | "wait" | "go" | "done" | "early">("idle");
-  const [ms, setMs] = useState(0);
-  const [best, setBest] = useState(() => Number(localStorage.getItem("reflex-best") || 0));
-  const start = useRef(0);
-  const t = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  function begin() {
-    setState("wait"); setMs(0);
-    t.current = setTimeout(() => { start.current = performance.now(); setState("go"); }, 1000 + Math.random() * 3000);
-  }
-  function click() {
-    if (state === "wait") { if (t.current) clearTimeout(t.current); setState("early"); return; }
-    if (state === "go") {
-      const time = Math.round(performance.now() - start.current);
-      setMs(time); setState("done");
-      if (!best || time < best) { setBest(time); localStorage.setItem("reflex-best", String(time)); }
-    }
-  }
-  const colors = { idle: "bg-secondary", wait: "bg-red-500/50", go: "bg-emerald-500", done: "bg-secondary", early: "bg-orange-500/50" };
-  const msg = { idle: "Press Start", wait: "Wait for green…", go: "CLICK NOW!", done: `${ms} ms`, early: "Too early! Try again." };
-  return (
-    <div className="glass rounded-3xl p-8 max-w-md mx-auto text-center">
-      <p className="text-sm text-muted-foreground mb-3"><Trophy className="inline w-4 h-4 mr-1" /> Best: {best ? `${best} ms` : "—"}</p>
-      <div onClick={click} className={`h-56 rounded-2xl flex items-center justify-center text-2xl font-bold cursor-pointer transition-colors ${colors[state]}`}>
-        {msg[state]}
-      </div>
-      <Button onClick={begin} className="mt-5 bg-hero shadow-glow" disabled={state === "wait" || state === "go"}>
-        {state === "idle" ? "Start" : "Restart"}
-      </Button>
-    </div>
-  );
-}

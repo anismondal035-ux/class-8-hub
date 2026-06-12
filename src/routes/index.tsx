@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { DailyContent } from "@/components/DailyContent";
+import { DailyMotivation } from "@/components/DailyMotivation";
 import {
   Calendar, Download, Camera, Cake, Gamepad2, Bot, MessageSquare,
-  BookOpen, ClipboardList, FileText, Megaphone, CalendarClock, Sparkles, ArrowRight, GraduationCap
+  BookOpen, ClipboardList, FileText, Megaphone, CalendarClock, Sparkles, ArrowRight, GraduationCap, Library
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -20,16 +20,18 @@ export const Route = createFileRoute("/")({
 });
 
 const QUICK = [
-  { to: "/routine", label: "Timetable", desc: "Weekly schedule", Icon: Calendar, color: "from-violet-500 to-purple-500" },
-  { to: "/homework", label: "Homework", desc: "Pending tasks", Icon: ClipboardList, color: "from-purple-500 to-indigo-500" },
-  { to: "/notes", label: "Notes", desc: "Shared study notes", Icon: FileText, color: "from-indigo-500 to-blue-500" },
-  { to: "/events", label: "Events", desc: "Upcoming events", Icon: CalendarClock, color: "from-blue-500 to-violet-500" },
-  { to: "/birthdays", label: "Birthdays", desc: "Never miss one", Icon: Cake, color: "from-pink-500 to-purple-500" },
-  { to: "/memories", label: "Memories", desc: "Class photos", Icon: Camera, color: "from-fuchsia-500 to-purple-500" },
-  { to: "/funzone", label: "Games", desc: "Fun zone", Icon: Gamepad2, color: "from-purple-500 to-pink-500" },
-  { to: "/chat", label: "Chat", desc: "Class chat", Icon: MessageSquare, color: "from-violet-500 to-indigo-500" },
-  { to: "/assistant", label: "AI Assistant", desc: "Smart study help", Icon: Bot, color: "from-indigo-500 to-purple-500" },
-  { to: "/announcements", label: "Announcements", desc: "Latest news", Icon: Megaphone, color: "from-purple-500 to-fuchsia-500" },
+  { to: "/routine", label: "Timetable", desc: "Weekly schedule", Icon: Calendar },
+  { to: "/homework", label: "Homework", desc: "Pending tasks", Icon: ClipboardList },
+  { to: "/notes", label: "Notes", desc: "Shared notes", Icon: FileText },
+  { to: "/resources", label: "Resources", desc: "Study links", Icon: Library },
+  { to: "/events", label: "Events", desc: "Upcoming", Icon: CalendarClock },
+  { to: "/birthdays", label: "Birthdays", desc: "Never miss one", Icon: Cake },
+  { to: "/memories", label: "Memories", desc: "Class photos", Icon: Camera },
+  { to: "/funzone", label: "Games", desc: "Fun zone", Icon: Gamepad2 },
+  { to: "/chat", label: "Chat", desc: "Class chat", Icon: MessageSquare },
+  { to: "/assistant", label: "AI Assistant", desc: "Smart help", Icon: Bot },
+  { to: "/announcements", label: "Announcements", desc: "Latest news", Icon: Megaphone },
+  { to: "/downloads", label: "Download App", desc: "PC & mobile", Icon: Download },
 ];
 
 function todayDOW() {
@@ -232,8 +234,9 @@ function Index() {
         <div className="absolute -bottom-32 -right-32 w-[28rem] h-[28rem] rounded-full bg-accent/30 blur-3xl animate-blob" style={{ animationDelay: "5s" }} />
         <div className="relative px-6 sm:px-12 py-14 sm:py-20 text-center max-w-3xl mx-auto">
           <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full mb-6 animate-glow-pulse">
-            <Sparkles className="w-3.5 h-3.5" /> Premium school portal · 2026
+            <GraduationCap className="w-3.5 h-3.5" /> Welcome
           </span>
+          <p className="text-sm sm:text-base uppercase tracking-[0.3em] text-muted-foreground mb-2">Delhi Public School</p>
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05]">
             Class <span className="text-gradient">8-B</span> Official Website
           </h1>
@@ -250,6 +253,9 @@ function Index() {
           </div>
         </div>
       </section>
+
+      {/* DAILY MOTIVATION */}
+      <DailyMotivation />
 
       {/* QUICK ACCESS */}
       <section>
@@ -276,12 +282,6 @@ function Index() {
 
       {/* ESSENTIAL THINGS */}
       <EssentialThings />
-
-      {/* WORD/THOUGHT OF DAY */}
-      <section>
-        <h2 className="text-2xl sm:text-3xl font-bold mb-5 text-center">Today's <span className="text-gradient">Inspiration</span></h2>
-        <DailyContent />
-      </section>
 
       {/* DOWNLOADS CTA */}
       <section className="glass-strong rounded-3xl p-8 sm:p-10 text-center shadow-card-soft">
