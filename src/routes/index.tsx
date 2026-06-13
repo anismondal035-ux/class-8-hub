@@ -237,7 +237,7 @@ function Index() {
           <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full mb-6 animate-glow-pulse">
             <GraduationCap className="w-3.5 h-3.5" /> Welcome
           </span>
-          <p className="text-sm sm:text-base uppercase tracking-[0.3em] text-muted-foreground mb-2">Delhi Public School</p>
+          <p className="text-sm sm:text-base uppercase tracking-[0.3em] text-muted-foreground mb-2">Delhi Public Secondary School</p>
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05]">
             Class <span className="text-gradient">8-B</span> Official Website
           </h1>
