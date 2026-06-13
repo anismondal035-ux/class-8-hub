@@ -11,12 +11,13 @@ const NAV = [
   { to: "/routine", label: "Timetable" },
   { to: "/homework", label: "Homework" },
   { to: "/notes", label: "Notes" },
-  { to: "/resources", label: "Resources" },
+  { to: "/daily", label: "Daily" },
   { to: "/events", label: "Events" },
   { to: "/announcements", label: "News" },
   { to: "/memories", label: "Memories" },
   { to: "/birthdays", label: "Birthdays" },
   { to: "/funzone", label: "Fun" },
+  { to: "/vawsum", label: "Vawsum" },
   { to: "/downloads", label: "Download" },
 ];
 
