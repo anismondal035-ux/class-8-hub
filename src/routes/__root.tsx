@@ -58,8 +58,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "Class 8 B — Smart School Hub" },
       { name: "twitter:description", content: "Class 8 B official hub: AI study buddy, daily Word & Thought of the Day, class routine, Vawsum link, and downloads." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/214f9745-2a72-4b26-b3ee-4150fae9d415" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/214f9745-2a72-4b26-b3ee-4150fae9d415" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/cb3d5d55-0c7b-4ad3-a461-a4f6e4a45dda" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/cb3d5d55-0c7b-4ad3-a461-a4f6e4a45dda" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
