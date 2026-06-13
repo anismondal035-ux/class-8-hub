@@ -3,10 +3,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { chat } from "@/lib/chat.functions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Sparkles, Loader2, User, Bot, Trash2, Copy, Check } from "lucide-react";
+import { Send, Sparkles, Loader2, User, Bot, Trash2, Copy, Check, Download, RefreshCw, Maximize2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
+import { ZoomableImage } from "./ZoomableImage";
 
 const STORAGE_KEY = "class8b-chat-history-v2";
 type Msg = { role: "user" | "assistant"; content: string; ts: number };
@@ -18,7 +19,54 @@ const SUGGESTIONS = [
   "Give me 5 tips to score well in Maths",
 ];
 
-function MessageBubble({ m }: { m: Msg }) {
+function parseImageMarker(content: string): { url: string; prompt: string } | null {
+  const m = content.match(/^__IMAGE__(.+)__IMAGE__$/s);
+  if (!m) return null;
+  try {
+    const obj = JSON.parse(m[1]);
+    if (obj && typeof obj.url === "string") return obj;
+  } catch {}
+  return null;
+}
+
+function AIImageCard({ url, prompt, onRegenerate }: { url: string; prompt: string; onRegenerate: () => void }) {
+  async function download() {
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `class8b-ai-${Date.now()}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+      toast.success("Image downloaded");
+    } catch {
+      toast.error("Couldn't download image");
+    }
+  }
+  return (
+    <div className="space-y-2">
+      <p className="text-sm text-muted-foreground">Here's what I made for you:</p>
+      <ZoomableImage src={url} alt={prompt} className="block w-full max-w-md aspect-square" />
+      <div className="flex flex-wrap gap-2 pt-1">
+        <Button size="sm" variant="outline" onClick={() => window.open(url, "_blank")}>
+          <Maximize2 className="w-3.5 h-3.5 mr-1.5" /> Full screen
+        </Button>
+        <Button size="sm" variant="outline" onClick={download}>
+          <Download className="w-3.5 h-3.5 mr-1.5" /> Download
+        </Button>
+        <Button size="sm" variant="outline" onClick={onRegenerate}>
+          <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Regenerate
+        </Button>
+      </div>
+      <p className="text-xs text-muted-foreground italic pt-1">Prompt: {prompt}</p>
+    </div>
+  );
+}
+
+function MessageBubble({ m, onRegenerate }: { m: Msg; onRegenerate: (prompt: string) => void }) {
   const [copied, setCopied] = useState(false);
   const time = new Date(m.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   function copy() {
@@ -26,6 +74,7 @@ function MessageBubble({ m }: { m: Msg }) {
     setCopied(true); setTimeout(() => setCopied(false), 1500);
     toast.success("Copied");
   }
+  const image = m.role === "assistant" ? parseImageMarker(m.content) : null;
   return (
     <div className={`flex gap-3 animate-float-up ${m.role === "user" ? "flex-row-reverse" : ""}`}>
       <div className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center ${
@@ -38,7 +87,9 @@ function MessageBubble({ m }: { m: Msg }) {
           ? "bg-primary text-primary-foreground rounded-tr-sm"
           : "glass text-foreground rounded-tl-sm"
       }`}>
-        {m.role === "assistant" ? (
+        {image ? (
+          <AIImageCard url={image.url} prompt={image.prompt} onRegenerate={() => onRegenerate(image.prompt)} />
+        ) : m.role === "assistant" ? (
           <div className="md-body break-words">
             <ReactMarkdown remarkPlugins={[remarkGfm]} components={{
               img: ({ src, alt }) => <img src={src as string} alt={alt || ""} loading="lazy" />,
@@ -51,9 +102,11 @@ function MessageBubble({ m }: { m: Msg }) {
         )}
         <div className="flex items-center justify-between gap-2 mt-1.5 opacity-60 text-[10px]">
           <span>{time}</span>
-          <button onClick={copy} className="opacity-0 group-hover:opacity-100 transition-opacity hover:opacity-100 p-1 rounded">
-            {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-          </button>
+          {!image && (
+            <button onClick={copy} className="opacity-0 group-hover:opacity-100 transition-opacity hover:opacity-100 p-1 rounded">
+              {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -131,7 +184,7 @@ export function Chat() {
             </div>
           </div>
         )}
-        {messages.map((m, i) => <MessageBubble key={i} m={m} />)}
+        {messages.map((m, i) => <MessageBubble key={i} m={m} onRegenerate={(p) => send(`/draw ${p.replace(/^\/(image|img|draw|picture)\s*/i, "")}`)} />)}
         {loading && (
           <div className="flex gap-3 animate-float-up">
             <div className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-hero text-primary-foreground shadow-glow">

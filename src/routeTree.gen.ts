@@ -11,13 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VawsumRouteImport } from './routes/vawsum'
 import { Route as RoutineRouteImport } from './routes/routine'
-import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as NotesRouteImport } from './routes/notes'
 import { Route as MemoriesRouteImport } from './routes/memories'
 import { Route as HomeworkRouteImport } from './routes/homework'
 import { Route as FunzoneRouteImport } from './routes/funzone'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DownloadsRouteImport } from './routes/downloads'
+import { Route as DailyRouteImport } from './routes/daily'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as BirthdaysRouteImport } from './routes/birthdays'
 import { Route as AssistantRouteImport } from './routes/assistant'
@@ -32,11 +32,6 @@ const VawsumRoute = VawsumRouteImport.update({
 const RoutineRoute = RoutineRouteImport.update({
   id: '/routine',
   path: '/routine',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotesRoute = NotesRouteImport.update({
@@ -67,6 +62,11 @@ const EventsRoute = EventsRouteImport.update({
 const DownloadsRoute = DownloadsRouteImport.update({
   id: '/downloads',
   path: '/downloads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DailyRoute = DailyRouteImport.update({
+  id: '/daily',
+  path: '/daily',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChatRoute = ChatRouteImport.update({
@@ -101,13 +101,13 @@ export interface FileRoutesByFullPath {
   '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
   '/chat': typeof ChatRoute
+  '/daily': typeof DailyRoute
   '/downloads': typeof DownloadsRoute
   '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
   '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
   '/notes': typeof NotesRoute
-  '/resources': typeof ResourcesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
@@ -117,13 +117,13 @@ export interface FileRoutesByTo {
   '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
   '/chat': typeof ChatRoute
+  '/daily': typeof DailyRoute
   '/downloads': typeof DownloadsRoute
   '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
   '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
   '/notes': typeof NotesRoute
-  '/resources': typeof ResourcesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
@@ -134,13 +134,13 @@ export interface FileRoutesById {
   '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
   '/chat': typeof ChatRoute
+  '/daily': typeof DailyRoute
   '/downloads': typeof DownloadsRoute
   '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
   '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
   '/notes': typeof NotesRoute
-  '/resources': typeof ResourcesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
@@ -152,13 +152,13 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/birthdays'
     | '/chat'
+    | '/daily'
     | '/downloads'
     | '/events'
     | '/funzone'
     | '/homework'
     | '/memories'
     | '/notes'
-    | '/resources'
     | '/routine'
     | '/vawsum'
   fileRoutesByTo: FileRoutesByTo
@@ -168,13 +168,13 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/birthdays'
     | '/chat'
+    | '/daily'
     | '/downloads'
     | '/events'
     | '/funzone'
     | '/homework'
     | '/memories'
     | '/notes'
-    | '/resources'
     | '/routine'
     | '/vawsum'
   id:
@@ -184,13 +184,13 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/birthdays'
     | '/chat'
+    | '/daily'
     | '/downloads'
     | '/events'
     | '/funzone'
     | '/homework'
     | '/memories'
     | '/notes'
-    | '/resources'
     | '/routine'
     | '/vawsum'
   fileRoutesById: FileRoutesById
@@ -201,13 +201,13 @@ export interface RootRouteChildren {
   AssistantRoute: typeof AssistantRoute
   BirthdaysRoute: typeof BirthdaysRoute
   ChatRoute: typeof ChatRoute
+  DailyRoute: typeof DailyRoute
   DownloadsRoute: typeof DownloadsRoute
   EventsRoute: typeof EventsRoute
   FunzoneRoute: typeof FunzoneRoute
   HomeworkRoute: typeof HomeworkRoute
   MemoriesRoute: typeof MemoriesRoute
   NotesRoute: typeof NotesRoute
-  ResourcesRoute: typeof ResourcesRoute
   RoutineRoute: typeof RoutineRoute
   VawsumRoute: typeof VawsumRoute
 }
@@ -226,13 +226,6 @@ declare module '@tanstack/react-router' {
       path: '/routine'
       fullPath: '/routine'
       preLoaderRoute: typeof RoutineRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resources': {
-      id: '/resources'
-      path: '/resources'
-      fullPath: '/resources'
-      preLoaderRoute: typeof ResourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notes': {
@@ -275,6 +268,13 @@ declare module '@tanstack/react-router' {
       path: '/downloads'
       fullPath: '/downloads'
       preLoaderRoute: typeof DownloadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/daily': {
+      id: '/daily'
+      path: '/daily'
+      fullPath: '/daily'
+      preLoaderRoute: typeof DailyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chat': {
@@ -321,13 +321,13 @@ const rootRouteChildren: RootRouteChildren = {
   AssistantRoute: AssistantRoute,
   BirthdaysRoute: BirthdaysRoute,
   ChatRoute: ChatRoute,
+  DailyRoute: DailyRoute,
   DownloadsRoute: DownloadsRoute,
   EventsRoute: EventsRoute,
   FunzoneRoute: FunzoneRoute,
   HomeworkRoute: HomeworkRoute,
   MemoriesRoute: MemoriesRoute,
   NotesRoute: NotesRoute,
-  ResourcesRoute: ResourcesRoute,
   RoutineRoute: RoutineRoute,
   VawsumRoute: VawsumRoute,
 }

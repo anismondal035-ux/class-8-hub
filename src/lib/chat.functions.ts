@@ -35,18 +35,54 @@ function wantsImage(text: string) {
 
 async function generateImage(apiKey: string, prompt: string): Promise<string | null> {
   const cleaned = prompt.replace(/^\/(image|img|draw|picture)\s*/i, "").trim() || prompt;
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "google/gemini-2.5-flash-image",
-      messages: [{ role: "user", content: `Create a clean, vivid, school-friendly illustration: ${cleaned}` }],
-      modalities: ["image", "text"],
-    }),
-  });
-  if (!res.ok) return null;
-  const j = await res.json();
-  return (j?.choices?.[0]?.message?.images?.[0]?.image_url?.url as string) ?? null;
+  const fullPrompt = `Create a clean, vivid, school-friendly illustration. High quality, sharp details, no text overlays. Subject: ${cleaned}`;
+
+  // Primary: dedicated images endpoint (more reliable, normalized response).
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-3.1-flash-image-preview",
+        prompt: fullPrompt,
+        n: 1,
+      }),
+    });
+    if (res.ok) {
+      const j = await res.json();
+      const b64 = j?.data?.[0]?.b64_json;
+      if (b64) return `data:image/png;base64,${b64}`;
+      const url = j?.data?.[0]?.url;
+      if (typeof url === "string" && url.length > 0) return url;
+    } else {
+      console.warn("image gen v1/images failed", res.status, await res.text().catch(() => ""));
+    }
+  } catch (e) {
+    console.warn("image gen v1/images threw", e);
+  }
+
+  // Fallback: chat-completions image shape.
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image",
+        messages: [{ role: "user", content: fullPrompt }],
+        modalities: ["image", "text"],
+      }),
+    });
+    if (!res.ok) return null;
+    const j = await res.json();
+    const url = j?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (typeof url === "string" && url.length > 0) return url;
+    const b64 = j?.choices?.[0]?.message?.images?.[0]?.b64_json;
+    if (b64) return `data:image/png;base64,${b64}`;
+    return null;
+  } catch (e) {
+    console.warn("image gen fallback threw", e);
+    return null;
+  }
 }
 
 export const chat = createServerFn({ method: "POST" })
@@ -63,9 +99,13 @@ export const chat = createServerFn({ method: "POST" })
     if (isImageRequest) {
       const url = await generateImage(apiKey, last.content);
       if (url) {
-        return { reply: `Here's what I made for you:\n\n![generated image](${url})\n\nWant a different style? Just say "draw it again as ..." and tell me what to change.`, error: false };
+        // Embed a marker so the chat UI can render a rich image card (zoom/download/regen).
+        return {
+          reply: `__IMAGE__${JSON.stringify({ url, prompt: last.content })}__IMAGE__`,
+          error: false,
+        };
       }
-      return { reply: "I tried to draw that but the image generator didn't respond. Try again in a few seconds.", error: true };
+      return { reply: "I couldn't generate that image — the image service didn't respond. Please try again.", error: true };
     }
 
     // Inject today's real date so the model knows what "latest" means.

@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DailyMotivation } from "@/components/DailyMotivation";
 import {
   Calendar, Download, Camera, Cake, Gamepad2, Bot, MessageSquare,
-  BookOpen, ClipboardList, FileText, Megaphone, CalendarClock, Sparkles, ArrowRight, GraduationCap, Library
+  BookOpen, ClipboardList, FileText, Megaphone, CalendarClock, Sparkles, ArrowRight, GraduationCap, Sun, ExternalLink
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -23,7 +23,8 @@ const QUICK = [
   { to: "/routine", label: "Timetable", desc: "Weekly schedule", Icon: Calendar },
   { to: "/homework", label: "Homework", desc: "Pending tasks", Icon: ClipboardList },
   { to: "/notes", label: "Notes", desc: "Shared notes", Icon: FileText },
-  { to: "/resources", label: "Resources", desc: "Study links", Icon: Library },
+  { to: "/daily", label: "Daily Inspiration", desc: "Word & thought", Icon: Sun },
+  { to: "/vawsum", label: "Vawsum", desc: "School portal", Icon: ExternalLink },
   { to: "/events", label: "Events", desc: "Upcoming", Icon: CalendarClock },
   { to: "/birthdays", label: "Birthdays", desc: "Never miss one", Icon: Cake },
   { to: "/memories", label: "Memories", desc: "Class photos", Icon: Camera },
@@ -236,7 +237,7 @@ function Index() {
           <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-full mb-6 animate-glow-pulse">
             <GraduationCap className="w-3.5 h-3.5" /> Welcome
           </span>
-          <p className="text-sm sm:text-base uppercase tracking-[0.3em] text-muted-foreground mb-2">Delhi Public School</p>
+          <p className="text-sm sm:text-base uppercase tracking-[0.3em] text-muted-foreground mb-2">Delhi Public Secondary School</p>
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.05]">
             Class <span className="text-gradient">8-B</span> Official Website
           </h1>
