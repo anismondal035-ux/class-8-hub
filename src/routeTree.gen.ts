@@ -17,6 +17,7 @@ import { Route as HomeworkRouteImport } from './routes/homework'
 import { Route as FunzoneRouteImport } from './routes/funzone'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DownloadsRouteImport } from './routes/downloads'
+import { Route as DailyRouteImport } from './routes/daily'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as BirthdaysRouteImport } from './routes/birthdays'
 import { Route as AssistantRouteImport } from './routes/assistant'
@@ -63,6 +64,11 @@ const DownloadsRoute = DownloadsRouteImport.update({
   path: '/downloads',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DailyRoute = DailyRouteImport.update({
+  id: '/daily',
+  path: '/daily',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
   '/chat': typeof ChatRoute
+  '/daily': typeof DailyRoute
   '/downloads': typeof DownloadsRoute
   '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
   '/chat': typeof ChatRoute
+  '/daily': typeof DailyRoute
   '/downloads': typeof DownloadsRoute
   '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
   '/chat': typeof ChatRoute
+  '/daily': typeof DailyRoute
   '/downloads': typeof DownloadsRoute
   '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/birthdays'
     | '/chat'
+    | '/daily'
     | '/downloads'
     | '/events'
     | '/funzone'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/birthdays'
     | '/chat'
+    | '/daily'
     | '/downloads'
     | '/events'
     | '/funzone'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/assistant'
     | '/birthdays'
     | '/chat'
+    | '/daily'
     | '/downloads'
     | '/events'
     | '/funzone'
@@ -189,6 +201,7 @@ export interface RootRouteChildren {
   AssistantRoute: typeof AssistantRoute
   BirthdaysRoute: typeof BirthdaysRoute
   ChatRoute: typeof ChatRoute
+  DailyRoute: typeof DailyRoute
   DownloadsRoute: typeof DownloadsRoute
   EventsRoute: typeof EventsRoute
   FunzoneRoute: typeof FunzoneRoute
@@ -257,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DownloadsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/daily': {
+      id: '/daily'
+      path: '/daily'
+      fullPath: '/daily'
+      preLoaderRoute: typeof DailyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat': {
       id: '/chat'
       path: '/chat'
@@ -301,6 +321,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssistantRoute: AssistantRoute,
   BirthdaysRoute: BirthdaysRoute,
   ChatRoute: ChatRoute,
+  DailyRoute: DailyRoute,
   DownloadsRoute: DownloadsRoute,
   EventsRoute: EventsRoute,
   FunzoneRoute: FunzoneRoute,
@@ -313,3 +334,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
