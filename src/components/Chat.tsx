@@ -184,7 +184,7 @@ export function Chat() {
             </div>
           </div>
         )}
-        {messages.map((m, i) => <MessageBubble key={i} m={m} />)}
+        {messages.map((m, i) => <MessageBubble key={i} m={m} onRegenerate={(p) => send(`/draw ${p.replace(/^\/(image|img|draw|picture)\s*/i, "")}`)} />)}
         {loading && (
           <div className="flex gap-3 animate-float-up">
             <div className="shrink-0 w-9 h-9 rounded-xl flex items-center justify-center bg-hero text-primary-foreground shadow-glow">
