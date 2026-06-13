@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { pickFromBank } from "./word-bank";
+import { pickFromBank, pickForDate, WORDS } from "./word-bank";
 
 const dateSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -14,7 +14,18 @@ const shuffleSchema = z.object({
 
 const imageReqSchema = z.object({
   word: z.string().min(1).max(60),
+  word_meaning: z.string().min(1).max(300).optional(),
   thought: z.string().min(1).max(400),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+});
+
+const overrideSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  word: z.string().min(1).max(60).optional(),
+  word_meaning: z.string().min(1).max(300).optional(),
+  word_example: z.string().min(1).max(300).optional(),
+  thought: z.string().min(1).max(400).optional(),
+  thought_author: z.string().max(120).nullable().optional(),
 });
 
 type DailyRow = {
@@ -22,137 +33,176 @@ type DailyRow = {
   date: string;
   word: string;
   word_meaning: string;
+  word_example?: string | null;
   thought: string;
   thought_author: string | null;
   image_url: string | null;
 };
 
-async function generateText(apiKey: string, dateISO: string, seed = 0) {
-  const d = new Date(dateISO + "T00:00:00Z");
-  const start = Date.UTC(d.getUTCFullYear(), 0, 0);
-  const dayOfYear = Math.floor((d.getTime() - start) / 86400000);
-  const themes = [
-    "kindness", "courage", "learning", "friendship", "hard work", "curiosity",
-    "gratitude", "teamwork", "honesty", "dreams", "perseverance", "patience",
-    "creativity", "respect", "responsibility", "humility", "discipline",
-  ];
-  const theme = themes[(dayOfYear + seed) % themes.length];
-
-  const prompt = `Pick a fresh "Word of the Day" and "Thought of the Day" for a Class 8 school assembly.
-Date: ${dateISO}, day-of-year ${dayOfYear}, variation seed ${seed}, theme hint: ${theme}.
-Rules:
-- WORD: a useful, slightly advanced English vocabulary word for a 13-14 year old. Not too obscure, not basic. Different from common picks like "happy", "diligent", "curious".
-- WORD_MEANING: clear, simple, max 18 words.
-- THOUGHT: short motivational/philosophical line (1-2 sentences, max 30 words). Fits a morning assembly.
-- thought_author: name if it is by a real famous person, otherwise empty string.
-Return ONLY JSON:
-{"word":"...","word_meaning":"...","thought":"...","thought_author":"..."}`;
-
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "google/gemini-2.5-flash-lite",
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
-    }),
-  });
-  if (!res.ok) throw new Error(`text gen failed ${res.status}`);
-  const j = await res.json();
-  const content = j?.choices?.[0]?.message?.content ?? "{}";
-  const parsed = JSON.parse(content);
-  return {
-    word: String(parsed.word ?? "Curiosity"),
-    word_meaning: String(parsed.word_meaning ?? "A strong desire to learn or know something."),
-    thought: String(parsed.thought ?? "Stay curious — every question is a doorway."),
-    thought_author: parsed.thought_author ? String(parsed.thought_author) : null,
-  };
+function findExample(word: string): string {
+  const w = WORDS.find((x) => x.word.toLowerCase() === word.toLowerCase());
+  return w?.example ?? `Try to use the word "${word}" in your own sentence today.`;
 }
 
-async function generateImage(apiKey: string, word: string, thought: string) {
-  const prompt = `A bright, friendly, school-assembly style illustrated poster.
-Top half: the word "${word}" in big bold elegant typography.
-Bottom half: the quote "${thought}" in clean handwritten script.
-Soft watercolor illustration, warm sunrise colors, motivational vibe, no extra text.`;
+function buildPosterPrompt(opts: {
+  word: string;
+  meaning?: string;
+  thought: string;
+  date?: string;
+}) {
+  const dateLine = opts.date
+    ? new Date(opts.date + "T00:00:00").toLocaleDateString("en-GB", {
+        weekday: "long", year: "numeric", month: "long", day: "numeric",
+      })
+    : "";
+  return `Design a beautiful, premium "Daily Inspiration" poster for a school assembly.
+Style: modern, elegant, soft purple-to-indigo gradient background, warm glow, clean typography, motivational vibe, suitable for students aged 13-14. 4K quality.
 
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "google/gemini-2.5-flash-image",
-      messages: [{ role: "user", content: prompt }],
-      modalities: ["image", "text"],
-    }),
-  });
-  if (!res.ok) return null;
-  const j = await res.json();
-  return (j?.choices?.[0]?.message?.images?.[0]?.image_url?.url as string) ?? null;
+Compose the poster with these elements clearly visible and well-spaced:
+- Top: "DAILY INSPIRATION"${dateLine ? ` and the date "${dateLine}"` : ""} in clean small caps
+- Center large: the WORD "${opts.word}" in big bold elegant typography
+${opts.meaning ? `- Below the word, smaller italic meaning: "${opts.meaning}"` : ""}
+- Bottom half: the quote "${opts.thought}" in elegant handwritten script
+- Subtle decorative elements: stars, soft light rays, gentle sparkles
+
+No watermark. No extra unrelated text. Sharp readable lettering. Portrait orientation.`;
 }
 
-// FAST: returns word + thought immediately. Image generated separately.
+async function generateImage(apiKey: string, prompt: string): Promise<string | null> {
+  // Try the dedicated image endpoint with the new fast image model.
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-3.1-flash-image-preview",
+        prompt,
+        n: 1,
+      }),
+    });
+    if (res.ok) {
+      const j = await res.json();
+      const b64 = j?.data?.[0]?.b64_json;
+      if (b64) return `data:image/png;base64,${b64}`;
+      const url = j?.data?.[0]?.url;
+      if (url) return url;
+    } else {
+      console.warn("image gen v1/images failed", res.status, await res.text().catch(() => ""));
+    }
+  } catch (e) {
+    console.warn("image gen v1/images threw", e);
+  }
+
+  // Fallback: chat-completions image shape (older nano banana).
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-image",
+        messages: [{ role: "user", content: prompt }],
+        modalities: ["image", "text"],
+      }),
+    });
+    if (!res.ok) return null;
+    const j = await res.json();
+    const url = j?.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+    if (typeof url === "string" && url.length > 0) return url;
+    const b64 = j?.choices?.[0]?.message?.images?.[0]?.b64_json;
+    if (b64) return `data:image/png;base64,${b64}`;
+    return null;
+  } catch (e) {
+    console.warn("image gen fallback threw", e);
+    return null;
+  }
+}
+
+// FAST: returns the day's word + thought immediately (from curated bank, no AI cost).
 export const getDailyContent = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => dateSchema.parse(i))
   .handler(async ({ data }) => {
     const { date } = data;
     const { data: existing } = await supabaseAdmin
       .from("daily_content").select("*").eq("date", date).maybeSingle();
-    if (existing) return existing as DailyRow;
-
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) {
-      return {
-        id: "fallback", date,
-        word: "Diligent", word_meaning: "Showing care and effort in your work.",
-        thought: "Small daily effort beats rare bursts of brilliance.",
-        thought_author: null, image_url: null,
-      } as DailyRow;
+    if (existing) {
+      const row = existing as DailyRow;
+      if (!row.word_example) {
+        row.word_example = findExample(row.word);
+      }
+      return row;
     }
 
+    // Auto pick from bank (rotates daily by date hash).
+    const pick = pickForDate(date);
+    const insertPayload = {
+      date,
+      word: pick.word,
+      word_meaning: pick.word_meaning,
+      thought: pick.thought,
+      thought_author: pick.thought_author,
+      image_url: null as string | null,
+    };
+
     try {
-      const text = await generateText(apiKey, date, 0);
       const { data: inserted, error } = await supabaseAdmin
         .from("daily_content")
-        .insert({ date, ...text, image_url: null })
+        .insert(insertPayload)
         .select("*").single();
       if (error) {
         const { data: again } = await supabaseAdmin
           .from("daily_content").select("*").eq("date", date).maybeSingle();
-        if (again) return again as DailyRow;
+        if (again) {
+          const row = again as DailyRow;
+          row.word_example = row.word_example ?? findExample(row.word);
+          return row;
+        }
         throw error;
       }
-      return inserted as DailyRow;
+      const row = inserted as DailyRow;
+      row.word_example = pick.word_example;
+      return row;
     } catch (e) {
-      console.error("daily text gen error", e);
+      console.error("daily save error", e);
       return {
-        id: "fallback", date,
-        word: "Resilient", word_meaning: "Able to recover quickly from difficulties.",
-        thought: "Falling down is part of learning to fly.",
-        thought_author: null, image_url: null,
+        id: "fallback",
+        date,
+        word: pick.word,
+        word_meaning: pick.word_meaning,
+        word_example: pick.word_example,
+        thought: pick.thought,
+        thought_author: pick.thought_author,
+        image_url: null,
       } as DailyRow;
     }
   });
 
-// SLOW: generates the poster image lazily. Called after first paint.
+// SLOW: generates the poster image lazily.
 export const ensureDailyImage = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => dateSchema.parse(i))
   .handler(async ({ data }) => {
     const { date } = data;
     const { data: row } = await supabaseAdmin
       .from("daily_content").select("*").eq("date", date).maybeSingle();
-    if (!row) return { image_url: null };
-    if (row.image_url) return { image_url: row.image_url };
+    if (!row) return { image_url: null as string | null };
+    if (row.image_url) return { image_url: row.image_url as string };
 
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) return { image_url: null };
 
-    const url = await generateImage(apiKey, row.word, row.thought);
+    const prompt = buildPosterPrompt({
+      word: row.word,
+      meaning: row.word_meaning,
+      thought: row.thought,
+      date,
+    });
+    const url = await generateImage(apiKey, prompt);
     if (url) {
       await supabaseAdmin.from("daily_content").update({ image_url: url }).eq("date", date);
     }
     return { image_url: url };
   });
 
-// INSTANT shuffle from a curated local bank — no AI call, no waiting.
+// INSTANT shuffle from local bank — no AI call.
 export const shuffleDaily = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => shuffleSchema.parse(i))
   .handler(async ({ data }) => {
@@ -160,12 +210,43 @@ export const shuffleDaily = createServerFn({ method: "POST" })
     return pickFromBank(data.date, seed);
   });
 
-// Generate a poster on demand (used by shuffle so the image actually changes).
+// Generate a poster on demand (also used by shuffle so the image changes).
 export const generatePoster = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => imageReqSchema.parse(i))
   .handler(async ({ data }) => {
     const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) return { image_url: null };
-    const url = await generateImage(apiKey, data.word, data.thought);
+    if (!apiKey) return { image_url: null as string | null };
+    const prompt = buildPosterPrompt({
+      word: data.word,
+      meaning: data.word_meaning,
+      thought: data.thought,
+      date: data.date,
+    });
+    const url = await generateImage(apiKey, prompt);
     return { image_url: url };
+  });
+
+// Manual override (write to DB, clear image so it regenerates).
+export const setDailyOverride = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => overrideSchema.parse(i))
+  .handler(async ({ data }) => {
+    const { date, ...patch } = data;
+    const { data: existing } = await supabaseAdmin
+      .from("daily_content").select("*").eq("date", date).maybeSingle();
+
+    const merged = {
+      date,
+      word: patch.word ?? existing?.word ?? "Resilient",
+      word_meaning: patch.word_meaning ?? existing?.word_meaning ?? "Able to recover quickly from difficulties.",
+      thought: patch.thought ?? existing?.thought ?? "Stars can't shine without darkness.",
+      thought_author: patch.thought_author ?? existing?.thought_author ?? null,
+      image_url: null as string | null, // clear so it regenerates
+    };
+
+    if (existing) {
+      await supabaseAdmin.from("daily_content").update(merged).eq("date", date);
+    } else {
+      await supabaseAdmin.from("daily_content").insert(merged);
+    }
+    return { ok: true };
   });
