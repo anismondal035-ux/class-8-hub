@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DailyMotivation } from "@/components/DailyMotivation";
 import {
   Calendar, Download, Camera, Cake, Gamepad2, Bot, MessageSquare,
-  BookOpen, ClipboardList, FileText, Megaphone, CalendarClock, Sparkles, ArrowRight, GraduationCap, Library
+  BookOpen, ClipboardList, FileText, Megaphone, CalendarClock, Sparkles, ArrowRight, GraduationCap, Sun, ExternalLink
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
