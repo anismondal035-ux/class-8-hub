@@ -3,10 +3,11 @@ import { useServerFn } from "@tanstack/react-start";
 import { chat } from "@/lib/chat.functions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Sparkles, Loader2, User, Bot, Trash2, Copy, Check } from "lucide-react";
+import { Send, Sparkles, Loader2, User, Bot, Trash2, Copy, Check, Download, RefreshCw, Maximize2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
+import { ZoomableImage } from "./ZoomableImage";
 
 const STORAGE_KEY = "class8b-chat-history-v2";
 type Msg = { role: "user" | "assistant"; content: string; ts: number };
