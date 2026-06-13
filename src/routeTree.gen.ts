@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VawsumRouteImport } from './routes/vawsum'
 import { Route as RoutineRouteImport } from './routes/routine'
-import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as NotesRouteImport } from './routes/notes'
 import { Route as MemoriesRouteImport } from './routes/memories'
 import { Route as HomeworkRouteImport } from './routes/homework'
@@ -32,11 +31,6 @@ const VawsumRoute = VawsumRouteImport.update({
 const RoutineRoute = RoutineRouteImport.update({
   id: '/routine',
   path: '/routine',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResourcesRoute = ResourcesRouteImport.update({
-  id: '/resources',
-  path: '/resources',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotesRoute = NotesRouteImport.update({
@@ -107,7 +101,6 @@ export interface FileRoutesByFullPath {
   '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
   '/notes': typeof NotesRoute
-  '/resources': typeof ResourcesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
@@ -123,7 +116,6 @@ export interface FileRoutesByTo {
   '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
   '/notes': typeof NotesRoute
-  '/resources': typeof ResourcesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
@@ -140,7 +132,6 @@ export interface FileRoutesById {
   '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
   '/notes': typeof NotesRoute
-  '/resources': typeof ResourcesRoute
   '/routine': typeof RoutineRoute
   '/vawsum': typeof VawsumRoute
 }
@@ -158,7 +149,6 @@ export interface FileRouteTypes {
     | '/homework'
     | '/memories'
     | '/notes'
-    | '/resources'
     | '/routine'
     | '/vawsum'
   fileRoutesByTo: FileRoutesByTo
@@ -174,7 +164,6 @@ export interface FileRouteTypes {
     | '/homework'
     | '/memories'
     | '/notes'
-    | '/resources'
     | '/routine'
     | '/vawsum'
   id:
@@ -190,7 +179,6 @@ export interface FileRouteTypes {
     | '/homework'
     | '/memories'
     | '/notes'
-    | '/resources'
     | '/routine'
     | '/vawsum'
   fileRoutesById: FileRoutesById
@@ -207,7 +195,6 @@ export interface RootRouteChildren {
   HomeworkRoute: typeof HomeworkRoute
   MemoriesRoute: typeof MemoriesRoute
   NotesRoute: typeof NotesRoute
-  ResourcesRoute: typeof ResourcesRoute
   RoutineRoute: typeof RoutineRoute
   VawsumRoute: typeof VawsumRoute
 }
@@ -226,13 +213,6 @@ declare module '@tanstack/react-router' {
       path: '/routine'
       fullPath: '/routine'
       preLoaderRoute: typeof RoutineRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resources': {
-      id: '/resources'
-      path: '/resources'
-      fullPath: '/resources'
-      preLoaderRoute: typeof ResourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notes': {
@@ -327,20 +307,9 @@ const rootRouteChildren: RootRouteChildren = {
   HomeworkRoute: HomeworkRoute,
   MemoriesRoute: MemoriesRoute,
   NotesRoute: NotesRoute,
-  ResourcesRoute: ResourcesRoute,
   RoutineRoute: RoutineRoute,
   VawsumRoute: VawsumRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
