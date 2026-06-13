@@ -240,7 +240,13 @@ function DailyPage() {
       {user && (
         <AdminOverride
           date={date}
-          current={shown}
+          current={{
+            word: shown.word,
+            word_meaning: shown.word_meaning,
+            word_example: shown.word_example ?? undefined,
+            thought: shown.thought,
+            thought_author: shown.thought_author,
+          }}
           onSave={async (patch) => {
             await overrideFn({ data: { date, ...patch } });
             setShuffleOverride(null);
