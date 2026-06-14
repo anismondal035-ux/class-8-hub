@@ -2,10 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DailyMotivation } from "@/components/DailyMotivation";
+import { closureOn, isWeekend, nextHoliday, daysBetween } from "@/lib/holidays";
 import {
   Calendar, Download, Camera, Cake, Gamepad2, Bot, MessageSquare,
-  BookOpen, ClipboardList, FileText, Megaphone, CalendarClock, Sparkles, ArrowRight, GraduationCap, Sun, ExternalLink
+  BookOpen, ClipboardList, FileText, Megaphone, CalendarClock, Sparkles, ArrowRight, GraduationCap, Sun, ExternalLink,
+  PartyPopper,
 } from "lucide-react";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
