@@ -27,6 +27,7 @@ const QUICK = [
   { to: "/homework", label: "Homework", desc: "Pending tasks", Icon: ClipboardList },
   { to: "/notes", label: "Notes", desc: "Shared notes", Icon: FileText },
   { to: "/daily", label: "Daily Inspiration", desc: "Word & thought", Icon: Sun },
+  { to: "/holidays", label: "Holidays", desc: "Calendar", Icon: PartyPopper },
   { to: "/vawsum", label: "Vawsum", desc: "School portal", Icon: ExternalLink },
   { to: "/events", label: "Events", desc: "Upcoming", Icon: CalendarClock },
   { to: "/birthdays", label: "Birthdays", desc: "Never miss one", Icon: Cake },
