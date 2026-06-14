@@ -236,27 +236,9 @@ function DailyPage() {
         </div>
       </div>
 
-      {/* Admin override */}
-      {user && (
-        <AdminOverride
-          date={date}
-          current={{
-            word: shown.word,
-            word_meaning: shown.word_meaning,
-            word_example: shown.word_example ?? undefined,
-            thought: shown.thought,
-            thought_author: shown.thought_author,
-          }}
-          onSave={async (patch) => {
-            await overrideFn({ data: { date, ...patch } });
-            setShuffleOverride(null);
-            setImageUrl(null);
-            await qc.invalidateQueries({ queryKey: ["daily", date] });
-            await refetch();
-            toast.success("Saved. A new poster will generate.");
-          }}
-        />
-      )}
+      {/* Admin override is intentionally hidden from the UI.
+          Backend server fn `setDailyOverride` remains available for admin use. */}
+
 
       <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
         <Sparkles className="w-3 h-3" /> Content rotates automatically every day — {dayName} pick
