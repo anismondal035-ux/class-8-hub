@@ -287,3 +287,70 @@ function Index() {
     </div>
   );
 }
+
+function TodayCard({ today, todaysClasses }: { today: string; todaysClasses: string[] }) {
+  const now = new Date();
+  const closure = closureOn(now);
+  const weekend = isWeekend(now);
+
+  return (
+    <div className="glass rounded-3xl p-5 shadow-soft-glow">
+      <div className="flex items-center gap-2 mb-3">
+        <GraduationCap className="w-4 h-4 text-primary" />
+        <h3 className="font-bold">Today · {today}</h3>
+      </div>
+      {closure ? (
+        <div>
+          <p className="text-lg font-bold">Holiday Today 🎉</p>
+          <p className="text-sm text-muted-foreground mt-1">{closure.name}</p>
+        </div>
+      ) : weekend ? (
+        <div>
+          <p className="text-lg font-bold">Weekend — No Classes Today 🎉</p>
+          <p className="text-sm text-muted-foreground mt-1">Rest, recharge, have fun.</p>
+        </div>
+      ) : todaysClasses.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No classes today — enjoy! 🎉</p>
+      ) : (
+        <ol className="space-y-1.5 text-sm">
+          {todaysClasses.map((s, i) => (
+            <li key={i} className="flex items-center gap-2">
+              <span className="w-6 h-6 rounded-md bg-primary/15 text-primary text-xs font-bold flex items-center justify-center">{i + 1}</span>
+              {s}
+            </li>
+          ))}
+        </ol>
+      )}
+      <Link to="/routine" className="text-xs text-primary mt-3 inline-flex items-center gap-1 hover:underline">Full timetable <ArrowRight className="w-3 h-3" /></Link>
+    </div>
+  );
+}
+
+function NextHolidayCard() {
+  const now = new Date();
+  const next = nextHoliday(now);
+  const left = next ? daysBetween(now, new Date(next.start + "T00:00:00")) : null;
+  return (
+    <div className="glass rounded-3xl p-5 shadow-soft-glow">
+      <div className="flex items-center gap-2 mb-3">
+        <PartyPopper className="w-4 h-4 text-primary" />
+        <h3 className="font-bold">Next Holiday</h3>
+      </div>
+      {next ? (
+        <div>
+          <p className="font-semibold">{next.name}</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {new Date(next.start + "T00:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "long", year: "numeric" })}
+          </p>
+          <p className="mt-2 inline-block text-xs font-semibold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
+            {left === 0 ? "Today!" : left === 1 ? "Tomorrow" : `in ${left} days`}
+          </p>
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">No upcoming holidays.</p>
+      )}
+      <Link to="/holidays" className="text-xs text-primary mt-3 inline-flex items-center gap-1 hover:underline">Full calendar <ArrowRight className="w-3 h-3" /></Link>
+    </div>
+  );
+}
+
