@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Calendar, Printer } from "lucide-react";
+import { Calendar, Printer, PartyPopper } from "lucide-react";
+import { closureOn, isWeekend, entriesOn } from "@/lib/holidays";
 
 export const Route = createFileRoute("/routine")({
   component: RoutinePage,
