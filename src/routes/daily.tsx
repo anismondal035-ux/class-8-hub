@@ -1,25 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
   getDailyContent,
   ensureDailyImage,
   shuffleDaily,
   generatePoster,
-  setDailyOverride,
 } from "@/lib/daily.functions";
 import { ZoomableImage } from "@/components/ZoomableImage";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { useAuth } from "@/hooks/use-auth";
 import {
   Calendar, Quote, BookOpen, Loader2, Shuffle, ImageIcon,
-  Download, Maximize2, Sparkles, Settings, Sun,
+  Download, Maximize2, Sparkles, Sun,
 } from "lucide-react";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/daily")({
   component: DailyPage,
@@ -37,13 +34,11 @@ function todayISO() {
 }
 
 function DailyPage() {
-  const qc = useQueryClient();
   const getFn = useServerFn(getDailyContent);
   const imgFn = useServerFn(ensureDailyImage);
   const shuffleFn = useServerFn(shuffleDaily);
   const posterFn = useServerFn(generatePoster);
-  const overrideFn = useServerFn(setDailyOverride);
-  const { user } = useAuth();
+
 
   const date = todayISO();
   const prettyDate = new Date(date + "T00:00:00").toLocaleDateString("en-GB", {
@@ -236,27 +231,9 @@ function DailyPage() {
         </div>
       </div>
 
-      {/* Admin override */}
-      {user && (
-        <AdminOverride
-          date={date}
-          current={{
-            word: shown.word,
-            word_meaning: shown.word_meaning,
-            word_example: shown.word_example ?? undefined,
-            thought: shown.thought,
-            thought_author: shown.thought_author,
-          }}
-          onSave={async (patch) => {
-            await overrideFn({ data: { date, ...patch } });
-            setShuffleOverride(null);
-            setImageUrl(null);
-            await qc.invalidateQueries({ queryKey: ["daily", date] });
-            await refetch();
-            toast.success("Saved. A new poster will generate.");
-          }}
-        />
-      )}
+      {/* Admin override is intentionally hidden from the UI.
+          Backend server fn `setDailyOverride` remains available for admin use. */}
+
 
       <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
         <Sparkles className="w-3 h-3" /> Content rotates automatically every day — {dayName} pick
@@ -265,76 +242,3 @@ function DailyPage() {
   );
 }
 
-function AdminOverride({
-  date, current, onSave,
-}: {
-  date: string;
-  current: { word: string; word_meaning: string; word_example?: string; thought: string; thought_author: string | null };
-  onSave: (patch: { word?: string; word_meaning?: string; word_example?: string; thought?: string; thought_author?: string | null }) => Promise<void>;
-}) {
-  const [open, setOpen] = useState(false);
-  const [word, setWord] = useState(current.word);
-  const [meaning, setMeaning] = useState(current.word_meaning);
-  const [example, setExample] = useState(current.word_example ?? "");
-  const [thought, setThought] = useState(current.thought);
-  const [author, setAuthor] = useState(current.thought_author ?? "");
-  const [saving, setSaving] = useState(false);
-
-  async function save() {
-    setSaving(true);
-    try {
-      await onSave({
-        word: word.trim() || undefined,
-        word_meaning: meaning.trim() || undefined,
-        word_example: example.trim() || undefined,
-        thought: thought.trim() || undefined,
-        thought_author: author.trim() ? author.trim() : null,
-      });
-      setOpen(false);
-    } finally { setSaving(false); }
-  }
-
-  return (
-    <Card className="p-5 glass">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
-      >
-        <Settings className="w-4 h-4" /> Manual override (signed in) {open ? "▲" : "▼"}
-      </button>
-      {open && (
-        <div className="mt-4 space-y-3">
-          <p className="text-xs text-muted-foreground">
-            Change today's word or thought. Saving will regenerate the poster image.
-          </p>
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-semibold">Word</label>
-              <Input value={word} onChange={(e) => setWord(e.target.value)} />
-            </div>
-            <div>
-              <label className="text-xs font-semibold">Thought author</label>
-              <Input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="(optional)" />
-            </div>
-          </div>
-          <div>
-            <label className="text-xs font-semibold">Meaning</label>
-            <Input value={meaning} onChange={(e) => setMeaning(e.target.value)} />
-          </div>
-          <div>
-            <label className="text-xs font-semibold">Example sentence</label>
-            <Input value={example} onChange={(e) => setExample(e.target.value)} />
-          </div>
-          <div>
-            <label className="text-xs font-semibold">Thought</label>
-            <Textarea value={thought} onChange={(e) => setThought(e.target.value)} rows={2} />
-          </div>
-          <Button onClick={save} disabled={saving} className="bg-hero shadow-glow">
-            {saving ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : null}
-            Save & regenerate
-          </Button>
-        </div>
-      )}
-    </Card>
-  );
-}

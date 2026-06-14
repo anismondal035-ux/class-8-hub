@@ -13,6 +13,7 @@ const NAV = [
   { to: "/notes", label: "Notes" },
   { to: "/daily", label: "Daily" },
   { to: "/events", label: "Events" },
+  { to: "/holidays", label: "Holidays" },
   { to: "/announcements", label: "News" },
   { to: "/memories", label: "Memories" },
   { to: "/birthdays", label: "Birthdays" },

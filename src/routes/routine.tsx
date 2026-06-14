@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Calendar, Printer } from "lucide-react";
+import { Calendar, Printer, PartyPopper } from "lucide-react";
+import { closureOn, isWeekend, entriesOn } from "@/lib/holidays";
 
 export const Route = createFileRoute("/routine")({
   component: RoutinePage,
@@ -63,8 +64,31 @@ function cellClass(s: string) {
 const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday"] as const;
 
 function RoutinePage() {
+  const today = new Date();
+  const todayClosure = closureOn(today);
+  const weekend = isWeekend(today);
+  const todayEntries = entriesOn(today);
+  const celebration = todayEntries.find((e) => e.type === "celebration");
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+      {(todayClosure || weekend) && (
+        <div className="glass-strong rounded-3xl p-6 sm:p-8 text-center mb-8 shadow-glow border border-primary/30">
+          <PartyPopper className="w-10 h-10 mx-auto text-primary mb-3" />
+          <h2 className="text-2xl sm:text-3xl font-bold">
+            {todayClosure ? "Holiday Today 🎉" : "Weekend — No Classes Today 🎉"}
+          </h2>
+          {todayClosure && <p className="mt-2 text-base sm:text-lg text-muted-foreground">{todayClosure.name}</p>}
+          {!todayClosure && weekend && <p className="mt-2 text-base sm:text-lg text-muted-foreground">Rest, recharge, have fun.</p>}
+          <Link to="/holidays" className="mt-4 inline-block text-sm font-semibold text-primary hover:underline">View full holiday calendar →</Link>
+        </div>
+      )}
+      {!todayClosure && !weekend && celebration && (
+        <div className="glass rounded-2xl p-4 text-center mb-6 border border-emerald-400/30">
+          <p className="text-sm sm:text-base"><b className="text-emerald-300">Today's Celebration:</b> {celebration.name} · Classes run as per timetable.</p>
+        </div>
+      )}
+
       <div className="text-center mb-8">
         <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary bg-secondary px-3 py-1.5 rounded-full mb-4">
           <Calendar className="w-3.5 h-3.5" /> Official Class Timetable
