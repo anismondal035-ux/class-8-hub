@@ -1,25 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import {
   getDailyContent,
   ensureDailyImage,
   shuffleDaily,
   generatePoster,
-  setDailyOverride,
 } from "@/lib/daily.functions";
 import { ZoomableImage } from "@/components/ZoomableImage";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
-import { useAuth } from "@/hooks/use-auth";
 import {
   Calendar, Quote, BookOpen, Loader2, Shuffle, ImageIcon,
-  Download, Maximize2, Sparkles, Settings, Sun,
+  Download, Maximize2, Sparkles, Sun,
 } from "lucide-react";
 import { toast } from "sonner";
+
 
 export const Route = createFileRoute("/daily")({
   component: DailyPage,
