@@ -14,6 +14,7 @@ import { Route as RoutineRouteImport } from './routes/routine'
 import { Route as NotesRouteImport } from './routes/notes'
 import { Route as MemoriesRouteImport } from './routes/memories'
 import { Route as HomeworkRouteImport } from './routes/homework'
+import { Route as HolidaysRouteImport } from './routes/holidays'
 import { Route as FunzoneRouteImport } from './routes/funzone'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DownloadsRouteImport } from './routes/downloads'
@@ -47,6 +48,11 @@ const MemoriesRoute = MemoriesRouteImport.update({
 const HomeworkRoute = HomeworkRouteImport.update({
   id: '/homework',
   path: '/homework',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HolidaysRoute = HolidaysRouteImport.update({
+  id: '/holidays',
+  path: '/holidays',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FunzoneRoute = FunzoneRouteImport.update({
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/downloads': typeof DownloadsRoute
   '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
+  '/holidays': typeof HolidaysRoute
   '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
   '/notes': typeof NotesRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/downloads': typeof DownloadsRoute
   '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
+  '/holidays': typeof HolidaysRoute
   '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
   '/notes': typeof NotesRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/downloads': typeof DownloadsRoute
   '/events': typeof EventsRoute
   '/funzone': typeof FunzoneRoute
+  '/holidays': typeof HolidaysRoute
   '/homework': typeof HomeworkRoute
   '/memories': typeof MemoriesRoute
   '/notes': typeof NotesRoute
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/downloads'
     | '/events'
     | '/funzone'
+    | '/holidays'
     | '/homework'
     | '/memories'
     | '/notes'
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/downloads'
     | '/events'
     | '/funzone'
+    | '/holidays'
     | '/homework'
     | '/memories'
     | '/notes'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/downloads'
     | '/events'
     | '/funzone'
+    | '/holidays'
     | '/homework'
     | '/memories'
     | '/notes'
@@ -205,6 +217,7 @@ export interface RootRouteChildren {
   DownloadsRoute: typeof DownloadsRoute
   EventsRoute: typeof EventsRoute
   FunzoneRoute: typeof FunzoneRoute
+  HolidaysRoute: typeof HolidaysRoute
   HomeworkRoute: typeof HomeworkRoute
   MemoriesRoute: typeof MemoriesRoute
   NotesRoute: typeof NotesRoute
@@ -247,6 +260,13 @@ declare module '@tanstack/react-router' {
       path: '/homework'
       fullPath: '/homework'
       preLoaderRoute: typeof HomeworkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/holidays': {
+      id: '/holidays'
+      path: '/holidays'
+      fullPath: '/holidays'
+      preLoaderRoute: typeof HolidaysRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/funzone': {
@@ -325,6 +345,7 @@ const rootRouteChildren: RootRouteChildren = {
   DownloadsRoute: DownloadsRoute,
   EventsRoute: EventsRoute,
   FunzoneRoute: FunzoneRoute,
+  HolidaysRoute: HolidaysRoute,
   HomeworkRoute: HomeworkRoute,
   MemoriesRoute: MemoriesRoute,
   NotesRoute: NotesRoute,
