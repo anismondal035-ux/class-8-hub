@@ -34,13 +34,11 @@ function todayISO() {
 }
 
 function DailyPage() {
-  const qc = useQueryClient();
   const getFn = useServerFn(getDailyContent);
   const imgFn = useServerFn(ensureDailyImage);
   const shuffleFn = useServerFn(shuffleDaily);
   const posterFn = useServerFn(generatePoster);
-  const overrideFn = useServerFn(setDailyOverride);
-  const { user } = useAuth();
+
 
   const date = todayISO();
   const prettyDate = new Date(date + "T00:00:00").toLocaleDateString("en-GB", {
