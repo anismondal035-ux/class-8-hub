@@ -107,26 +107,13 @@ function EssentialThings() {
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Today's Classes */}
-        <div className="glass rounded-3xl p-5 shadow-soft-glow">
-          <div className="flex items-center gap-2 mb-3">
-            <GraduationCap className="w-4 h-4 text-primary" />
-            <h3 className="font-bold">Today's Classes · {today}</h3>
-          </div>
-          {todaysClasses.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No classes today — enjoy! 🎉</p>
-          ) : (
-            <ol className="space-y-1.5 text-sm">
-              {todaysClasses.map((s, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-md bg-primary/15 text-primary text-xs font-bold flex items-center justify-center">{i+1}</span>
-                  {s}
-                </li>
-              ))}
-            </ol>
-          )}
-          <Link to="/routine" className="text-xs text-primary mt-3 inline-flex items-center gap-1 hover:underline">Full timetable <ArrowRight className="w-3 h-3" /></Link>
-        </div>
+        {/* Today's Classes — holiday/weekend aware */}
+        <TodayCard today={today} todaysClasses={todaysClasses} />
+
+        {/* Next Holiday */}
+        <NextHolidayCard />
+
+
 
         {/* Upcoming Events */}
         <div className="glass rounded-3xl p-5 shadow-soft-glow">
