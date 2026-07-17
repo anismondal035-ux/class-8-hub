@@ -21,7 +21,8 @@ type GameId = "menu" | "flappy" | "ttt" | "rps" | "guess" | "memory" | "tod" | "
 function FunZone() {
   const [game, setGame] = useState<GameId>("menu");
 
-  const GAMES: { id: Exclude<GameId, "menu">; name: string; desc: string; emoji: string }[] = [
+  const GAMES: { id: Exclude<GameId, "menu">; name: string; desc: string; emoji: string; hot?: boolean }[] = [
+    { id: "race", name: "3D Car Racing", desc: "Multiple cars & tracks · lap timer", emoji: "🏎️", hot: true },
     { id: "flappy", name: "Flappy Bird", desc: "Beat your high score", emoji: "🐦" },
     { id: "tod", name: "Truth or Dare", desc: "Solo or party mode", emoji: "🎭" },
     { id: "ttt", name: "Tic Tac Toe", desc: "Classic 2-player", emoji: "❌⭕" },
