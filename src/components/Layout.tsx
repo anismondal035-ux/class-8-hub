@@ -18,6 +18,7 @@ const NAV = [
   { to: "/memories", label: "Memories" },
   { to: "/birthdays", label: "Birthdays" },
   { to: "/funzone", label: "Fun" },
+  { to: "/anthems", label: "Anthems" },
   { to: "/vawsum", label: "Vawsum" },
   { to: "/downloads", label: "Download" },
 ];

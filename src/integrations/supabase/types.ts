@@ -338,6 +338,27 @@ export type Database = {
         }
         Relationships: []
       }
+      site_content: {
+        Row: {
+          body: string
+          key: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          body?: string
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          body?: string
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

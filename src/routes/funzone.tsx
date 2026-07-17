@@ -4,23 +4,25 @@ import { Button } from "@/components/ui/button";
 import { Gamepad2, RotateCcw, Trophy } from "lucide-react";
 import { FlappyBird } from "@/components/games/FlappyBird";
 import { TruthOrDare } from "@/components/games/TruthOrDare";
+import { CarRace } from "@/components/games/CarRace";
 
 export const Route = createFileRoute("/funzone")({
   component: FunZone,
   head: () => ({
     meta: [
       { title: "Fun Zone — Class 8 B" },
-      { name: "description", content: "Mini games for break time: Flappy Bird, Tic Tac Toe, Memory, Rock Paper Scissors, Truth or Dare." },
+      { name: "description", content: "Mini games for break time: 3D Car Racing, Minecraft, Flappy Bird, Tic Tac Toe, Memory, Rock Paper Scissors, Truth or Dare." },
     ],
   }),
 });
 
-type GameId = "menu" | "flappy" | "ttt" | "rps" | "guess" | "memory" | "tod";
+type GameId = "menu" | "flappy" | "ttt" | "rps" | "guess" | "memory" | "tod" | "race";
 
 function FunZone() {
   const [game, setGame] = useState<GameId>("menu");
 
-  const GAMES: { id: Exclude<GameId, "menu">; name: string; desc: string; emoji: string }[] = [
+  const GAMES: { id: Exclude<GameId, "menu">; name: string; desc: string; emoji: string; hot?: boolean }[] = [
+    { id: "race", name: "3D Car Racing", desc: "Multiple cars & tracks · lap timer", emoji: "🏎️", hot: true },
     { id: "flappy", name: "Flappy Bird", desc: "Beat your high score", emoji: "🐦" },
     { id: "tod", name: "Truth or Dare", desc: "Solo or party mode", emoji: "🎭" },
     { id: "ttt", name: "Tic Tac Toe", desc: "Classic 2-player", emoji: "❌⭕" },
@@ -46,15 +48,28 @@ function FunZone() {
       {game === "menu" && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {GAMES.map((g) => (
-            <button key={g.id} onClick={() => setGame(g.id)} className="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-transform">
+            <button key={g.id} onClick={() => setGame(g.id)} className="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-transform relative">
+              {g.hot && <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-hero text-primary-foreground px-2 py-0.5 rounded-full shadow-soft-glow">New</span>}
               <div className="text-3xl mb-2">{g.emoji}</div>
               <h3 className="font-bold text-lg">{g.name}</h3>
               <p className="text-sm text-muted-foreground">{g.desc}</p>
             </button>
           ))}
+          <a
+            href="https://eaglercraft.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-transform relative block"
+          >
+            <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-accent text-accent-foreground px-2 py-0.5 rounded-full">Opens new tab</span>
+            <div className="text-3xl mb-2">🟩</div>
+            <h3 className="font-bold text-lg">Minecraft</h3>
+            <p className="text-sm text-muted-foreground">Play Eaglercraft in your browser</p>
+          </a>
         </div>
       )}
 
+      {game === "race" && <CarRace />}
       {game === "flappy" && <FlappyBird />}
       {game === "tod" && <TruthOrDare />}
       {game === "ttt" && <TicTacToe />}
