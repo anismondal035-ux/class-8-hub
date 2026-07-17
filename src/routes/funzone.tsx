@@ -48,15 +48,28 @@ function FunZone() {
       {game === "menu" && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {GAMES.map((g) => (
-            <button key={g.id} onClick={() => setGame(g.id)} className="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-transform">
+            <button key={g.id} onClick={() => setGame(g.id)} className="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-transform relative">
+              {g.hot && <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-hero text-primary-foreground px-2 py-0.5 rounded-full shadow-soft-glow">New</span>}
               <div className="text-3xl mb-2">{g.emoji}</div>
               <h3 className="font-bold text-lg">{g.name}</h3>
               <p className="text-sm text-muted-foreground">{g.desc}</p>
             </button>
           ))}
+          <a
+            href="https://eaglercraft.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="glass rounded-2xl p-6 text-left hover:scale-[1.02] transition-transform relative block"
+          >
+            <span className="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-accent text-accent-foreground px-2 py-0.5 rounded-full">Opens new tab</span>
+            <div className="text-3xl mb-2">🟩</div>
+            <h3 className="font-bold text-lg">Minecraft</h3>
+            <p className="text-sm text-muted-foreground">Play Eaglercraft in your browser</p>
+          </a>
         </div>
       )}
 
+      {game === "race" && <CarRace />}
       {game === "flappy" && <FlappyBird />}
       {game === "tod" && <TruthOrDare />}
       {game === "ttt" && <TicTacToe />}
