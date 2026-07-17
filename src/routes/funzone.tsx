@@ -4,18 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Gamepad2, RotateCcw, Trophy } from "lucide-react";
 import { FlappyBird } from "@/components/games/FlappyBird";
 import { TruthOrDare } from "@/components/games/TruthOrDare";
+import { CarRace } from "@/components/games/CarRace";
 
 export const Route = createFileRoute("/funzone")({
   component: FunZone,
   head: () => ({
     meta: [
       { title: "Fun Zone — Class 8 B" },
-      { name: "description", content: "Mini games for break time: Flappy Bird, Tic Tac Toe, Memory, Rock Paper Scissors, Truth or Dare." },
+      { name: "description", content: "Mini games for break time: 3D Car Racing, Minecraft, Flappy Bird, Tic Tac Toe, Memory, Rock Paper Scissors, Truth or Dare." },
     ],
   }),
 });
 
-type GameId = "menu" | "flappy" | "ttt" | "rps" | "guess" | "memory" | "tod";
+type GameId = "menu" | "flappy" | "ttt" | "rps" | "guess" | "memory" | "tod" | "race";
 
 function FunZone() {
   const [game, setGame] = useState<GameId>("menu");

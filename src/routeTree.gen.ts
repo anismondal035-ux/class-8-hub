@@ -22,6 +22,7 @@ import { Route as DailyRouteImport } from './routes/daily'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as BirthdaysRouteImport } from './routes/birthdays'
 import { Route as AssistantRouteImport } from './routes/assistant'
+import { Route as AnthemsRouteImport } from './routes/anthems'
 import { Route as AnnouncementsRouteImport } from './routes/announcements'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -90,6 +91,11 @@ const AssistantRoute = AssistantRouteImport.update({
   path: '/assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnthemsRoute = AnthemsRouteImport.update({
+  id: '/anthems',
+  path: '/anthems',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AnnouncementsRoute = AnnouncementsRouteImport.update({
   id: '/announcements',
   path: '/announcements',
@@ -104,6 +110,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/announcements': typeof AnnouncementsRoute
+  '/anthems': typeof AnthemsRoute
   '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
   '/chat': typeof ChatRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/announcements': typeof AnnouncementsRoute
+  '/anthems': typeof AnthemsRoute
   '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
   '/chat': typeof ChatRoute
@@ -139,6 +147,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/announcements': typeof AnnouncementsRoute
+  '/anthems': typeof AnthemsRoute
   '/assistant': typeof AssistantRoute
   '/birthdays': typeof BirthdaysRoute
   '/chat': typeof ChatRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/announcements'
+    | '/anthems'
     | '/assistant'
     | '/birthdays'
     | '/chat'
@@ -175,6 +185,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/announcements'
+    | '/anthems'
     | '/assistant'
     | '/birthdays'
     | '/chat'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/announcements'
+    | '/anthems'
     | '/assistant'
     | '/birthdays'
     | '/chat'
@@ -210,6 +222,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AnnouncementsRoute: typeof AnnouncementsRoute
+  AnthemsRoute: typeof AnthemsRoute
   AssistantRoute: typeof AssistantRoute
   BirthdaysRoute: typeof BirthdaysRoute
   ChatRoute: typeof ChatRoute
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/anthems': {
+      id: '/anthems'
+      path: '/anthems'
+      fullPath: '/anthems'
+      preLoaderRoute: typeof AnthemsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/announcements': {
       id: '/announcements'
       path: '/announcements'
@@ -338,6 +358,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AnnouncementsRoute: AnnouncementsRoute,
+  AnthemsRoute: AnthemsRoute,
   AssistantRoute: AssistantRoute,
   BirthdaysRoute: BirthdaysRoute,
   ChatRoute: ChatRoute,
