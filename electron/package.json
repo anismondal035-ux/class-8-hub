@@ -1,9 +1,0 @@
-{
-  "name": "class8b",
-  "productName": "Class 8 B",
-  "version": "1.0.0",
-  "description": "Class 8 B — desktop app",
-  "main": "main.cjs",
-  "author": "Anis",
-  "license": "MIT"
-}
