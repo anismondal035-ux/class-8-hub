@@ -4,25 +4,25 @@ import { Button } from "@/components/ui/button";
 import { Gamepad2, RotateCcw, Trophy } from "lucide-react";
 import { FlappyBird } from "@/components/games/FlappyBird";
 import { TruthOrDare } from "@/components/games/TruthOrDare";
-import { EndlessRunner } from "@/components/games/EndlessRunner";
+import { ClassQuiz } from "@/components/games/ClassQuiz";
 
 export const Route = createFileRoute("/funzone")({
   component: FunZone,
   head: () => ({
     meta: [
       { title: "Fun Zone — Class 8 B" },
-      { name: "description", content: "Mini games for break time: Endless Runner, Minecraft, Flappy Bird, Tic Tac Toe, Memory, Rock Paper Scissors, Truth or Dare." },
+      { name: "description", content: "Mini games for break time: Class Quiz Competition, Minecraft, Flappy Bird, Tic Tac Toe, Memory, Rock Paper Scissors, Truth or Dare." },
     ],
   }),
 });
 
-type GameId = "menu" | "flappy" | "ttt" | "rps" | "guess" | "memory" | "tod" | "runner";
+type GameId = "menu" | "flappy" | "ttt" | "rps" | "guess" | "memory" | "tod" | "quiz";
 
 function FunZone() {
   const [game, setGame] = useState<GameId>("menu");
 
   const GAMES: { id: Exclude<GameId, "menu">; name: string; desc: string; emoji: string; hot?: boolean }[] = [
-    { id: "runner", name: "Endless Runner", desc: "Dodge, jump, slide · coins & power-ups", emoji: "🏃", hot: true },
+    { id: "quiz", name: "Class Quiz Competition", desc: "Smart-board ready · teams, scoreboard, 200+ questions", emoji: "🏆", hot: true },
     { id: "flappy", name: "Flappy Bird", desc: "Beat your high score", emoji: "🐦" },
     { id: "tod", name: "Truth or Dare", desc: "Solo or party mode", emoji: "🎭" },
     { id: "ttt", name: "Tic Tac Toe", desc: "Classic 2-player", emoji: "❌⭕" },
@@ -69,7 +69,7 @@ function FunZone() {
         </div>
       )}
 
-      {game === "runner" && <EndlessRunner />}
+      {game === "quiz" && <ClassQuiz />}
       {game === "flappy" && <FlappyBird />}
       {game === "tod" && <TruthOrDare />}
       {game === "ttt" && <TicTacToe />}

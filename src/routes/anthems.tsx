@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import { Flag, Music, BookOpen, School, Save, Edit3, X, Copy, Check, Printer, BookOpenCheck } from "lucide-react";
+import { useRef, useState } from "react";
+import { Flag, Music, BookOpen, School, Copy, Check, Printer, BookOpenCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/anthems")({
@@ -55,6 +53,24 @@ I shall give my parents, teachers and all elders respect, and treat everyone wit
 To my country and my people, I pledge my devotion.
 In their well-being and prosperity alone lies my happiness.`;
 
+const SCHOOL_SONG = `We are the children of God. Our faith lies in the Lord.
+Thus we love everyone with our heart.
+Our Alma Mater, DPSS Barasat!
+
+We come to study and play, we love to come everyday.
+Thus we take the pledge with our heart.
+Our Alma Mater, DPSS Barasat!
+
+We aim to soar higher and higher,
+In order to create a beautiful bower.
+Thus we dedicate ourselves with our heart.
+Our Alma Mater, DPSS Barasat!
+
+You are like a shrine, a temple of knowledge,
+You build our life in unique ways.
+Thus we gain wisdom with our heart.
+Our Alma Mater, DPSS Barasat!`;
+
 function AnthemsPage() {
   return (
     <>
@@ -105,7 +121,14 @@ function AnthemsPage() {
             body={PLEDGE}
             className="lg:col-span-2"
           />
-          <SchoolSongCard />
+          <AnthemCard
+            icon={<School className="w-5 h-5" />}
+            title="School Song"
+            subtitle="Delhi Public Secondary School, Barasat"
+            body={SCHOOL_SONG}
+            className="lg:col-span-2"
+            accent
+          />
         </div>
       </div>
     </>
@@ -149,6 +172,9 @@ function AnthemCard({
           <Button size="sm" variant="outline" onClick={copy} title="Copy text">
             {copied ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
           </Button>
+          <Button size="sm" variant="outline" onClick={() => window.print()} title="Print">
+            <Printer className="w-4 h-4" />
+          </Button>
         </div>
       </header>
       <pre
@@ -159,111 +185,6 @@ function AnthemCard({
       >
         {body}
       </pre>
-    </section>
-  );
-}
-
-function SchoolSongCard() {
-  const { user } = useAuth();
-  const [body, setBody] = useState<string>("");
-  const [draft, setDraft] = useState<string>("");
-  const [editing, setEditing] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [reading, setReading] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase.from("site_content").select("body").eq("key", "school_song").maybeSingle();
-      const b = data?.body ?? "";
-      setBody(b);
-      setDraft(b);
-    })();
-  }, []);
-
-  async function save() {
-    setSaving(true);
-    const { error } = await supabase
-      .from("site_content")
-      .upsert({ key: "school_song", body: draft, updated_by: user?.id ?? null, updated_at: new Date().toISOString() });
-    setSaving(false);
-    if (error) { toast.error("Couldn't save: " + error.message); return; }
-    setBody(draft);
-    setEditing(false);
-    toast.success("School song published");
-  }
-
-  async function copy() {
-    if (!body) return;
-    try {
-      await navigator.clipboard.writeText(body);
-      setCopied(true);
-      toast.success("Copied to clipboard");
-      setTimeout(() => setCopied(false), 1600);
-    } catch { toast.error("Copy failed"); }
-  }
-
-  return (
-    <section className="glass rounded-3xl p-6 sm:p-8 lg:col-span-2 shadow-soft-glow transition-transform hover:-translate-y-0.5">
-      <header className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-        <div className="flex items-center gap-3">
-          <span className="inline-flex items-center justify-center w-11 h-11 rounded-xl bg-hero text-primary-foreground shadow-soft-glow">
-            <School className="w-5 h-5" />
-          </span>
-          <div>
-            <h2 className="text-xl font-bold">School Song</h2>
-            <p className="text-xs text-muted-foreground">Delhi Public Secondary School, Barasat</p>
-          </div>
-        </div>
-        <div className="flex gap-1.5 no-print">
-          {body && !editing && (
-            <>
-              <Button size="sm" variant="outline" onClick={() => setReading(r => !r)} title="Reading mode">
-                <BookOpenCheck className="w-4 h-4" />
-              </Button>
-              <Button size="sm" variant="outline" onClick={copy} title="Copy">
-                {copied ? <Check className="w-4 h-4 text-primary" /> : <Copy className="w-4 h-4" />}
-              </Button>
-            </>
-          )}
-          {user && !editing && (
-            <Button size="sm" variant="outline" onClick={() => { setDraft(body); setEditing(true); }}>
-              <Edit3 className="w-4 h-4 mr-1.5" /> {body ? "Edit" : "Add lyrics"}
-            </Button>
-          )}
-        </div>
-      </header>
-
-      {editing ? (
-        <div className="space-y-3">
-          <textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            rows={14}
-            placeholder="Paste the school song lyrics here…"
-            className="w-full bg-secondary/60 border border-border rounded-xl p-4 text-[15px] leading-relaxed font-serif focus:outline-none focus:ring-2 focus:ring-primary/50"
-          />
-          <div className="flex gap-2 justify-end">
-            <Button variant="ghost" size="sm" onClick={() => { setEditing(false); setDraft(body); }}>
-              <X className="w-4 h-4 mr-1.5" /> Cancel
-            </Button>
-            <Button size="sm" onClick={save} disabled={saving} className="bg-hero shadow-soft-glow">
-              <Save className="w-4 h-4 mr-1.5" /> {saving ? "Publishing…" : "Publish"}
-            </Button>
-          </div>
-        </div>
-      ) : body ? (
-        <pre className={`whitespace-pre-wrap font-serif text-foreground/95 selection:bg-primary/30 leading-loose ${
-          reading ? "text-lg sm:text-xl tracking-wide" : "text-[15px] sm:text-base"
-        }`}>
-          {body}
-        </pre>
-      ) : (
-        <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted-foreground">
-          <p className="italic">School song lyrics will be added by the administrator.</p>
-          {!user && <p className="text-xs mt-2">Sign in as an administrator to add lyrics.</p>}
-        </div>
-      )}
     </section>
   );
 }
